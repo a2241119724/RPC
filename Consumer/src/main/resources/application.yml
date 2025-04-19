@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: consumer
+rpc:
+  register:
+    zookeeper:
+      ip: 192.168.1.120
+      port: 2181

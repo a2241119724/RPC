@@ -4,7 +4,13 @@ spring:
 server:
   port: 8088
 rpc:
-  port: 8090
+  netty:
+    server:
+      port: 8090
+  register:
+    zookeeper:
+      ip: 192.168.1.120
+      port: 2181
 management:
   endpoints:
     web:

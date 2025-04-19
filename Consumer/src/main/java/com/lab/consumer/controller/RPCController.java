@@ -1,8 +1,7 @@
 package com.lab.consumer.controller;
 
 import com.lab.common.api.LabServer;
-import com.lab.consumer.annotation.RPCResource;
-import com.lab.consumer.netty.handler.NettyClientHandler;
+import com.lab.rpcclient.annotation.RPCResource;
 import org.springframework.web.bind.annotation.*;
 
 /**

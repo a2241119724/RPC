@@ -8,11 +8,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.IOException;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+
 @SpringBootTest
 class GatewayApplicationTests {
 
     @Test
-    void contextLoads() {
+    void contextLoads() throws IOException {
+//        Selector selector = Selector.open();
+//        selector.select()
     }
 
 }

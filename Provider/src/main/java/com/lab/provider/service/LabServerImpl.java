@@ -1,7 +1,7 @@
 package com.lab.provider.service;
 
 import com.lab.common.api.LabServer;
-import com.lab.provider.annotation.RPCServer;
+import com.lab.rpcserver.annotation.RPCServer;
 
 /**
  * @author lab
