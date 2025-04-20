@@ -1,107 +1,64 @@
 package com.lab.rpcclient.netty.handler;
 
-import com.alibaba.fastjson.JSON;
-import com.lab.rpcclient.annotation.RPCResource;
 import com.lab.rpcclient.netty.NettyClient;
-import com.lab.rpcclient.netty.ClientAop;
-import com.lab.rpccommon.pojo.RPCRequest;
+import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCResponse;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.cglib.proxy.Enhancer;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author lab
  * @Title: NettyClientHandler
  * @ProjectName RPC
  * @Description: TODO
- * @date 2025/4/9 19:06
+ * @date 2025/4/19 23:00
  */
 @Slf4j
-public class NettyClientHandler extends SimpleChannelInboundHandler<String> implements BeanPostProcessor{
+public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCResponse>> {
     @Resource
     private NettyClient nettyClient;
-    @Resource
-    private ClientAop clientAop;
 
-    public static ThreadPoolExecutor executor = new ThreadPoolExecutor(12,24,1,
-            TimeUnit.MINUTES, new ArrayBlockingQueue<>(50), new DefaultThreadFactory("Request"));
+    public static ThreadPoolExecutor executor = new ThreadPoolExecutor(
+            NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
+            TimeUnit.MINUTES, new ArrayBlockingQueue<>(200), new DefaultThreadFactory("Request"));
 
-    private Map<String, Object> map = new HashMap<>();
     private RPCResponse response;
     private ChannelHandlerContext ctx;
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx){
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        super.channelActive(ctx);
         this.ctx = ctx;
     }
 
     @Override
-    protected synchronized void channelRead0(ChannelHandlerContext ctx, String msg){
-        log.info("收到Provider的消息:" + msg);
+    protected synchronized void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RPCResponse> msg){
+        log.info("收到Provider的消息:" + msg.toString());
         try {
-            this.response = JSON.parseObject(msg, RPCResponse.class);
+            this.response = msg.getBody();
             notify();
         }catch (Exception e){
             log.info(e.toString());
         }
     }
 
-    private Object getProxy(Class serverClass, ProxyType proxyType){
-        if(!map.containsKey(serverClass.getName())){
-            Object serverProxy = null;
-            switch (proxyType){
-                case JDK:
-                    serverProxy = Proxy.newProxyInstance(serverClass.getClassLoader(), new Class[]{serverClass},
-                        (Object proxy, Method method, Object[] args) -> {
-                            return clientAop.intercept(proxy, method, args, null);
-                        });
-                case Cglib:
-                    Enhancer enhancer = new Enhancer();
-                    enhancer.setSuperclass(serverClass);
-                    enhancer.setCallback(clientAop);
-                    serverProxy = enhancer.create();
-            }
-            map.put(serverClass.getName(),serverProxy);
-        }
-        return map.get(serverClass.getName());
-    }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        for (Field field : bean.getClass().getDeclaredFields()) {
-            if(field.getAnnotation(RPCResource.class)!=null){
-                Object proxy = getProxy(field.getType(), ProxyType.Cglib);
-                try {
-                    field.setAccessible(true);
-                    field.set(bean, proxy);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return bean;
-    }
-
-    public RPCResponse send(RPCRequest request) throws InterruptedException, ExecutionException {
+    public RPCResponse send(ProtocolMessage<?> message) throws InterruptedException, ExecutionException {
         executor.submit(()->{
             synchronized (this){
-                ctx.writeAndFlush(JSON.toJSONString(request) + NettyClient.DELIMITER);
+                ctx.writeAndFlush(message);
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -111,6 +68,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> impl
         }).get();
         return response;
     }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
@@ -124,10 +82,5 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<String> impl
             log.error("业务异常", cause);
         }
         ctx.close();
-    }
-
-    public enum ProxyType{
-        JDK,
-        Cglib
     }
 }

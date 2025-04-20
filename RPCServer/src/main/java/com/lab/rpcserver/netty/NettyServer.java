@@ -1,5 +1,9 @@
 package com.lab.rpcserver.netty;
 
+import com.lab.rpccommon.handler.RPCDecoder;
+import com.lab.rpccommon.handler.RPCEncoder;
+import com.lab.rpccommon.pojo.ProtocolMessage;
+import com.lab.rpccommon.pojo.RPCRequest;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
 import com.lab.rpcserver.property.NettyServerProperty;
 import io.netty.bootstrap.ServerBootstrap;
@@ -10,6 +14,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -30,8 +35,6 @@ public class NettyServer {
     @Resource
     public NettyServerProperty property;
 
-    public static final String DELIMITER = "\n";
-
     private static final int MAX_FRAME_LENGTH = 1024;
 
     public void start() throws InterruptedException {
@@ -45,11 +48,11 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // out
-                        ch.pipeline().addLast(new StringEncoder());
+                        ch.pipeline().addLast(new RPCEncoder());
                         // in
-                        ch.pipeline().addLast(new DelimiterBasedFrameDecoder(MAX_FRAME_LENGTH,
-                                Unpooled.copiedBuffer(DELIMITER.getBytes())));
-                        ch.pipeline().addLast(new StringDecoder());
+                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH,
+                                13,4));
+                        ch.pipeline().addLast(new RPCDecoder());
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 }).bind(property.getHost(), property.getPort()).sync();

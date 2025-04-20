@@ -15,7 +15,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class RPCRequest {
-    private String requestId;
     private String serverName;
     private String functionName;
     private Class[] parameterTypes;

@@ -1,6 +1,9 @@
 package com.lab.rpcserver.netty.handler;
 
 import com.alibaba.fastjson.JSON;
+import com.lab.rpccommon.enum_.ProtocolMessageSerializerEnum;
+import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
+import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCRequest;
 import com.lab.rpccommon.pojo.RPCResponse;
 import com.lab.rpcserver.annotation.RPCServer;
@@ -9,7 +12,10 @@ import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.property.NettyServerProperty;
 import com.lab.rpcserver.zookeeper.IServerRegister;
 import com.lab.rpcserver.zookeeper.ServerRegister;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
+import io.netty.handler.codec.ByteToMessageDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.web.context.WebServerApplicationContext;
@@ -25,6 +31,7 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -37,7 +44,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class NettyServerHandler extends SimpleChannelInboundHandler<String> implements ApplicationContextAware {
+public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCRequest>> implements ApplicationContextAware {
     // 获取服务port
     @Resource
     private WebServerApplicationContext webServerApplicationContext;
@@ -61,20 +68,18 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> impl
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, String msg){
-        log.info("收到Consumer的消息:" + msg);
-        RPCRequest request = null;
+    protected void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RPCRequest> protocolMessage){
+        log.info("收到Consumer的消息:" + protocolMessage.toString());
+        RPCRequest request = protocolMessage.getBody();
         RPCResponse.RPCResponseBuilder responseBuilder = RPCResponse.builder();
-        try {
-            request = JSON.parseObject(msg, RPCRequest.class);
-        }catch (Exception e){
-            log.info(e.getStackTrace().toString());
-            ctx.writeAndFlush(JSON.toJSONString(responseBuilder.build()));
-            return;
-        }
-        responseBuilder.requestId(request.getRequestId());
+        ProtocolMessage.Header header = ProtocolMessage.Header.builder()
+                .serializer(ProtocolMessageSerializerEnum.JSON.getKey())
+                .type(ProtocolMessageTypeEnum.RESPONSE.getKey()).build();
         if(!map.containsKey(request.getServerName())){
-            ctx.writeAndFlush(JSON.toJSONString(responseBuilder.build()));
+            ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
+            _protocolMessage.setHeader(header);
+            _protocolMessage.setBody(responseBuilder.build());
+            ctx.writeAndFlush(protocolMessage);
             return;
         }
         Object serverBean = map.get(request.getServerName());
@@ -88,10 +93,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<String> impl
             responseBuilder.error(e.getStackTrace().toString());
         }
         //
-        ChannelFuture future = ctx.writeAndFlush(JSON.toJSONString(responseBuilder.build()) + NettyServer.DELIMITER);
-        future.addListener(new ChannelFutureListener() {
+        ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
+        _protocolMessage.setHeader(header);
+        _protocolMessage.setBody(responseBuilder.build());
+        ctx.writeAndFlush(_protocolMessage).addListener(new ChannelFutureListener() {
             @Override
-            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+            public void operationComplete(ChannelFuture channelFuture){
                 monitor.getReportDialResponseTime().record(System.currentTimeMillis()-startTime, TimeUnit.MILLISECONDS);
             }
         });

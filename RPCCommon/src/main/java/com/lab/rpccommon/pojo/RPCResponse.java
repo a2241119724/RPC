@@ -15,7 +15,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class RPCResponse {
-    private String requestId;
     private Object result;
     private String error;
 }
