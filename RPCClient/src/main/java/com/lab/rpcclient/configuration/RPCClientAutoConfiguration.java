@@ -3,10 +3,13 @@ package com.lab.rpcclient.configuration;
 import com.lab.rpcclient.netty.ClientAop;
 import com.lab.rpcclient.netty.NettyClient;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
-import com.lab.rpcclient.utils.BeanUtils;
+import com.lab.rpcclient.spi.faulttolerance.IFaultTolerance;
+import com.lab.rpcclient.spi.loadbalance.ILoadBalance;
+import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcclient.zookeeper.IServerDiscovery;
 import com.lab.rpcclient.zookeeper.ServerDiscovery;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -37,13 +40,27 @@ public class RPCClientAutoConfiguration implements CommandLineRunner {
     }
 
     @Bean
-    public BeanUtils beanUtils(){
-        return new BeanUtils();
+    public Utils beanUtils(){
+        return new Utils();
     }
 
     @Bean
+    @ConditionalOnMissingBean(ILoadBalance.class)
+    public ILoadBalance loadBalance(){
+        return Utils.getInstanceBySPI(ILoadBalance.class);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(IServerDiscovery.class)
     public IServerDiscovery serverDiscovery(){
-        return new ServerDiscovery();
+        return Utils.getInstanceBySPI(IServerDiscovery.class);
+    }
+
+    @Bean
+    @Scope("prototype")
+    @ConditionalOnMissingBean(IFaultTolerance.class)
+    public IFaultTolerance faultTolerance(){
+        return Utils.getInstanceBySPI(IFaultTolerance.class);
     }
 
     @Override

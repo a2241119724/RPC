@@ -3,7 +3,6 @@ package com.lab.rpcclient.netty;
 import com.lab.rpcclient.annotation.RPCResource;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
 import com.lab.rpcclient.zookeeper.ServerDiscovery;
-import com.lab.rpccommon.enum_.ProtocolMessageSerializerEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCRequest;
@@ -41,7 +40,7 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
 
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-        InetSocketAddress instance = serverDiscovery.getInstanceByRandom(method.getDeclaringClass().getSimpleName());
+        InetSocketAddress instance = serverDiscovery.getInstance(method.getDeclaringClass().getSimpleName());
         if(instance == null){
             return null;
         }
@@ -52,7 +51,6 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
                 .parameterTypes(method.getParameterTypes())
                 .parameters(objects).build();
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
-                .serializer(ProtocolMessageSerializerEnum.JSON.getKey())
                 .type(ProtocolMessageTypeEnum.REQUEST.getKey()).build();
         //
         ProtocolMessage<RPCRequest> protocolMessage = new ProtocolMessage<>();

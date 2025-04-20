@@ -1,11 +1,14 @@
 package com.lab.rpcserver.configuration;
 
+import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
 import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
+import com.lab.rpcserver.zookeeper.IServerRegister;
 import com.lab.rpcserver.zookeeper.ServerRegister;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,6 +46,11 @@ public class RPCServerAutoConfiguration implements CommandLineRunner {
         return new ServerRegister();
     }
 
+    @Bean
+    @ConditionalOnMissingBean(IServerRegister.class)
+    public IServerRegister loadBalance(){
+        return Utils.getInstanceBySPI(IServerRegister.class);
+    }
 
     @Override
     public void run(String... args) throws Exception {

@@ -1,6 +1,8 @@
 package com.lab.rpcclient.netty.handler;
 
 import com.lab.rpcclient.netty.NettyClient;
+import com.lab.rpcclient.spi.faulttolerance.IFaultTolerance;
+import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCResponse;
 import io.netty.channel.ChannelHandler;
@@ -30,12 +32,15 @@ import java.util.concurrent.TimeUnit;
 public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCResponse>> {
     @Resource
     private NettyClient nettyClient;
+    @Resource
+    private IFaultTolerance faultTolerance;
 
     public static ThreadPoolExecutor executor = new ThreadPoolExecutor(
             NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
             TimeUnit.MINUTES, new ArrayBlockingQueue<>(200), new DefaultThreadFactory("Request"));
 
     private RPCResponse response;
+    private ProtocolMessageStatusEnum statusEnum;
     private ChannelHandlerContext ctx;
 
     @Override
@@ -45,10 +50,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     }
 
     @Override
-    protected synchronized void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RPCResponse> msg){
-        log.info("收到Provider的消息:" + msg.toString());
+    protected synchronized void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RPCResponse> protocolMessage){
+        log.info("收到Provider的消息:" + protocolMessage.toString());
         try {
-            this.response = msg.getBody();
+            statusEnum = ProtocolMessageStatusEnum.getEnumByKey(protocolMessage.getHeader().getStatus());
+            response = protocolMessage.getBody();
             notify();
         }catch (Exception e){
             log.info(e.toString());
@@ -57,14 +63,20 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
 
     public RPCResponse send(ProtocolMessage<?> message) throws InterruptedException, ExecutionException {
         executor.submit(()->{
-            synchronized (this){
-                ctx.writeAndFlush(message);
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            // 重试
+            faultTolerance.execute(()->{
+                synchronized (this){
+                    ctx.writeAndFlush(message);
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if(statusEnum == ProtocolMessageStatusEnum.ERROR){
+                        throw new RuntimeException();
+                    }
                 }
-            }
+            });
         }).get();
         return response;
     }

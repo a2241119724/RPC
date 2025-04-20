@@ -1,21 +1,15 @@
 package com.lab.rpcserver.netty.handler;
 
-import com.alibaba.fastjson.JSON;
-import com.lab.rpccommon.enum_.ProtocolMessageSerializerEnum;
+import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCRequest;
 import com.lab.rpccommon.pojo.RPCResponse;
 import com.lab.rpcserver.annotation.RPCServer;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
-import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.property.NettyServerProperty;
 import com.lab.rpcserver.zookeeper.IServerRegister;
-import com.lab.rpcserver.zookeeper.ServerRegister;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
-import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.web.context.WebServerApplicationContext;
@@ -23,7 +17,6 @@ import org.springframework.cglib.reflect.FastClass;
 import org.springframework.cglib.reflect.FastMethod;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -31,7 +24,6 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -72,12 +64,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
         log.info("收到Consumer的消息:" + protocolMessage.toString());
         RPCRequest request = protocolMessage.getBody();
         RPCResponse.RPCResponseBuilder responseBuilder = RPCResponse.builder();
-        ProtocolMessage.Header header = ProtocolMessage.Header.builder()
-                .serializer(ProtocolMessageSerializerEnum.JSON.getKey())
-                .type(ProtocolMessageTypeEnum.RESPONSE.getKey()).build();
+        ProtocolMessage.Header.HeaderBuilder header = ProtocolMessage.Header.builder()
+                .type(ProtocolMessageTypeEnum.RESPONSE.getKey());
+        ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
         if(!map.containsKey(request.getServerName())){
-            ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
-            _protocolMessage.setHeader(header);
+            _protocolMessage.setHeader(header.status(ProtocolMessageStatusEnum.ERROR.getKey()).build());
             _protocolMessage.setBody(responseBuilder.build());
             ctx.writeAndFlush(protocolMessage);
             return;
@@ -93,8 +84,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
             responseBuilder.error(e.getStackTrace().toString());
         }
         //
-        ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
-        _protocolMessage.setHeader(header);
+        _protocolMessage.setHeader(header.build());
         _protocolMessage.setBody(responseBuilder.build());
         ctx.writeAndFlush(_protocolMessage).addListener(new ChannelFutureListener() {
             @Override

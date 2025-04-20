@@ -1,6 +1,7 @@
 package com.lab.rpcclient.zookeeper;
 
 import com.lab.rpcclient.property.RegisterCenterProperty;
+import com.lab.rpcclient.spi.loadbalance.ILoadBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -27,6 +28,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServerDiscovery implements IServerDiscovery{
     @Resource
     private RegisterCenterProperty registerCenterProperty;
+    @Resource
+    private ILoadBalance loadBalance;
 
     private Map<String, List<InetSocketAddress>> serverCache = new ConcurrentHashMap<>();
     private CuratorFramework client;
@@ -91,13 +94,13 @@ public class ServerDiscovery implements IServerDiscovery{
         });
     }
 
-    public InetSocketAddress getInstanceByRandom(String serverName){
+    public InetSocketAddress getInstance(String serverName){
         if(!serverCache.containsKey(serverName)){
             log.info("没有找到服务:" + serverName);
             return null;
         }
         List<InetSocketAddress> addresses = serverCache.get(serverName);
-        return addresses.get(random.nextInt(addresses.size()));
+        return loadBalance.select(addresses);
     }
 
     public void info() {

@@ -2,20 +2,11 @@ package com.lab.rpccommon.pojo;
 
 import cn.hutool.core.util.IdUtil;
 import com.lab.rpccommon.constant.ProtocolConstant;
-import com.lab.rpccommon.enum_.ProtocolMessageSerializerEnum;
-import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.factory.ISerializer;
-import com.lab.rpccommon.factory.SerializerFactory;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufAllocator;
-import io.netty.buffer.EmptyByteBuf;
+import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
 @Data
 @AllArgsConstructor
@@ -33,13 +24,11 @@ public class ProtocolMessage<T> {
         // 版本号
         @Builder.Default
         private byte version = ProtocolConstant.PROTOCOL_VERSION;
-        // 序列化器
-        @Builder.Default
-        private byte serializer = ProtocolMessageSerializerEnum.JSON.getKey();
-        // 消息类型（请求 / 响应）
+        // 消息类型 (请求 / 响应)
         private byte type;
-        // 状态
-        private byte status;
+        // 响应状态 (成功 / 失败)
+        @Builder.Default
+        private byte status = ProtocolMessageStatusEnum.SUCCESS.getKey();
         // 请求 id
         @Builder.Default
         private long requestId = IdUtil.getSnowflakeNextId();

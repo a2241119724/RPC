@@ -34,6 +34,10 @@ public class NettyServer {
     public NettyServerHandler nettyServerHandler;
     @Resource
     public NettyServerProperty property;
+    @Resource
+    private RPCEncoder rpcEncoder;
+    @Resource
+    private RPCDecoder rpcDecoder;
 
     private static final int MAX_FRAME_LENGTH = 1024;
 
@@ -48,11 +52,11 @@ public class NettyServer {
                     @Override
                     protected void initChannel(SocketChannel ch) throws Exception {
                         // out
-                        ch.pipeline().addLast(new RPCEncoder());
+                        ch.pipeline().addLast(rpcEncoder);
                         // in
                         ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH,
-                                13,4));
-                        ch.pipeline().addLast(new RPCDecoder());
+                                12,4));
+                        ch.pipeline().addLast(rpcDecoder);
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 }).bind(property.getHost(), property.getPort()).sync();

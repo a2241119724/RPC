@@ -1,4 +1,4 @@
-package com.lab.rpccommon.factory;
+package com.lab.rpccommon.spi;
 
 /**
  * @author lab

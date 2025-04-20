@@ -1,8 +1,9 @@
-package com.lab.rpcclient.utils;
+package com.lab.rpccommon.utils;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
+
+import java.util.ServiceLoader;
 
 /**
  * @author lab
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @Description: TODO
  * @date 2025/4/14 23:22
  */
-public class BeanUtils implements ApplicationContextAware {
+public class Utils implements ApplicationContextAware {
     private static ApplicationContext context;
 
     @Override
@@ -25,5 +26,12 @@ public class BeanUtils implements ApplicationContextAware {
 
     public static <T> T getBean(String name, Class<T> clazz) {
         return context.getBean(name, clazz);
+    }
+
+    public static <T> T getInstanceBySPI(Class<T> clazz){
+        for (T t : ServiceLoader.load(clazz)) {
+            return t;
+        }
+        return null;
     }
 }
