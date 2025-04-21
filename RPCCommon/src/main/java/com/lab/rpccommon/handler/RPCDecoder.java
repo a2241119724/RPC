@@ -3,6 +3,7 @@ package com.lab.rpccommon.handler;
 import com.lab.rpccommon.constant.ProtocolConstant;
 import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
+import com.lab.rpccommon.pojo.RPCHeart;
 import com.lab.rpccommon.spi.ISerializer;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCRequest;
@@ -11,6 +12,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.springframework.lang.Nullable;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -56,6 +58,8 @@ public class RPCDecoder extends MessageToMessageDecoder<ByteBuf> {
                 list.add(new ProtocolMessage(header, response));
                 break;
             case HEART_BEAT:
+                list.add(new ProtocolMessage(header, new RPCHeart()));
+                break;
             case OTHERS:
                 break;
             default:

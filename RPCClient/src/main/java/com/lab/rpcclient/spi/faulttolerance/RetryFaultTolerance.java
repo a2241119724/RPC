@@ -14,8 +14,6 @@ import java.util.concurrent.ScheduledExecutorService;
  * @Description: TODO
  * @date 2025/4/21 0:12
  */
-@AllArgsConstructor
-@NoArgsConstructor
 public class RetryFaultTolerance extends AFaultTolerance{
     private float initialDelay = 0.5f;
     private float backoffFactor = 1.0f;

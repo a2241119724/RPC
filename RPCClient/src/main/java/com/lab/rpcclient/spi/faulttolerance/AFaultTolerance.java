@@ -12,5 +12,5 @@ import lombok.Data;
 @Data
 public abstract class AFaultTolerance implements IFaultTolerance{
     protected int maxRetries = 3;
-    protected float maxDelay = 2.0f;
+    protected float maxDelay = 4.0f;
 }

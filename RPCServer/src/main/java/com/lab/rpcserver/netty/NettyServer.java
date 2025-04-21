@@ -1,5 +1,6 @@
 package com.lab.rpcserver.netty;
 
+import com.lab.rpccommon.handler.NettyHeartHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
 import com.lab.rpccommon.pojo.ProtocolMessage;
@@ -38,6 +39,8 @@ public class NettyServer {
     private RPCEncoder rpcEncoder;
     @Resource
     private RPCDecoder rpcDecoder;
+    @Resource
+    private NettyHeartHandler nettyHeartHandler;
 
     private static final int MAX_FRAME_LENGTH = 1024;
 
@@ -57,6 +60,7 @@ public class NettyServer {
                         ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH,
                                 12,4));
                         ch.pipeline().addLast(rpcDecoder);
+                        ch.pipeline().addLast(nettyHeartHandler);
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 }).bind(property.getHost(), property.getPort()).sync();

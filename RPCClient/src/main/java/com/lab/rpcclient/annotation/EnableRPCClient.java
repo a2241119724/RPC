@@ -1,6 +1,7 @@
 package com.lab.rpcclient.annotation;
 
 import com.lab.rpcclient.configuration.RPCClientAutoConfiguration;
+import com.lab.rpcclient.configuration.XxlJobConfiguration;
 import com.lab.rpccommon.configuration.RPCCommonConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Import;

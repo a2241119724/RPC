@@ -17,6 +17,9 @@ import java.util.List;
 public class MyLoadBalance implements ILoadBalance {
     @Override
     public <T> T select(List<T> addresses) {
+        if(addresses.size() == 0){
+            return null;
+        }
         return addresses.get(0);
     }
 }

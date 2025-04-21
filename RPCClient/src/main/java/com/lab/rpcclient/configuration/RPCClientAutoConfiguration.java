@@ -5,9 +5,9 @@ import com.lab.rpcclient.netty.NettyClient;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
 import com.lab.rpcclient.spi.faulttolerance.IFaultTolerance;
 import com.lab.rpcclient.spi.loadbalance.ILoadBalance;
+import com.lab.rpcclient.xxl.MyJobHandler;
 import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcclient.zookeeper.IServerDiscovery;
-import com.lab.rpcclient.zookeeper.ServerDiscovery;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class RPCClientAutoConfiguration implements CommandLineRunner {
     @Bean
-    @Scope("prototype")
+//    @Scope("prototype")
     public NettyClientHandler getNettyClientHandler(){
         return new NettyClientHandler();
     }
@@ -61,6 +61,11 @@ public class RPCClientAutoConfiguration implements CommandLineRunner {
     @ConditionalOnMissingBean(IFaultTolerance.class)
     public IFaultTolerance faultTolerance(){
         return Utils.getInstanceBySPI(IFaultTolerance.class);
+    }
+
+    @Bean
+    public MyJobHandler jobHandler(){
+        return new MyJobHandler();
     }
 
     @Override

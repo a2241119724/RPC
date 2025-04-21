@@ -70,9 +70,9 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
             switch (proxyType){
                 case JDK:
                     serverProxy = Proxy.newProxyInstance(serverClass.getClassLoader(), new Class[]{serverClass},
-                            (Object proxy, Method method, Object[] args) -> {
-                                return intercept(proxy, method, args, null);
-                            });
+                        (Object proxy, Method method, Object[] args) -> {
+                            return intercept(proxy, method, args, null);
+                        });
                 case Cglib:
                     Enhancer enhancer = new Enhancer();
                     enhancer.setSuperclass(serverClass);
