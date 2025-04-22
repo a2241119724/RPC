@@ -9,8 +9,9 @@ import lombok.Getter;
 public enum ProtocolMessageTypeEnum {
     REQUEST(0),
     RESPONSE(1),
-    HEART_BEAT(2),
-    OTHERS(3);
+    HEART_REQUEST(2),
+    HEART_RESPONSE(3),
+    OTHERS(4);
 
     private final byte key;
 

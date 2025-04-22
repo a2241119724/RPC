@@ -2,7 +2,6 @@ package com.lab.rpcserver.netty.handler;
 
 import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.handler.NettyHeartHandler;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import com.lab.rpccommon.pojo.RPCRequest;
 import com.lab.rpccommon.pojo.RPCResponse;
@@ -71,7 +70,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
         if(!map.containsKey(request.getServerName())){
             _protocolMessage.setHeader(header.status(ProtocolMessageStatusEnum.ERROR.getKey()).build());
             _protocolMessage.setBody(responseBuilder.build());
-            ctx.writeAndFlush(protocolMessage);
+            ctx.writeAndFlush(_protocolMessage);
             return;
         }
         Object serverBean = map.get(request.getServerName());
@@ -99,12 +98,13 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
         if (cause instanceof ClosedChannelException) {
             log.warn("连接被对方关闭: {}", ctx.channel().remoteAddress());
+            ctx.close();
         } else if (cause instanceof IOException) {
             log.error("网络异常断开: {}", cause.getMessage());
+            ctx.close();
         } else {
             log.error("业务异常", cause);
         }
-        ctx.close();
     }
 
     @Override

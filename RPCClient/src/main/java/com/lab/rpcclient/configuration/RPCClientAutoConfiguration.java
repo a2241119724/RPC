@@ -2,6 +2,7 @@ package com.lab.rpcclient.configuration;
 
 import com.lab.rpcclient.netty.ClientAop;
 import com.lab.rpcclient.netty.NettyClient;
+import com.lab.rpcclient.netty.handler.ClientHeartBeatHandler;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
 import com.lab.rpcclient.spi.faulttolerance.IFaultTolerance;
 import com.lab.rpcclient.spi.loadbalance.ILoadBalance;
@@ -24,7 +25,7 @@ import org.springframework.context.annotation.Scope;
 @Configuration
 public class RPCClientAutoConfiguration implements CommandLineRunner {
     @Bean
-//    @Scope("prototype")
+    @Scope("prototype")
     public NettyClientHandler getNettyClientHandler(){
         return new NettyClientHandler();
     }
@@ -66,6 +67,11 @@ public class RPCClientAutoConfiguration implements CommandLineRunner {
     @Bean
     public MyJobHandler jobHandler(){
         return new MyJobHandler();
+    }
+
+    @Bean
+    public ClientHeartBeatHandler clientHeartBeatHandler(){
+        return new ClientHeartBeatHandler();
     }
 
     @Override

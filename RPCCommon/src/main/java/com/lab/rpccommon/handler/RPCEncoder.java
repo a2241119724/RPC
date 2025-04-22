@@ -1,11 +1,13 @@
 package com.lab.rpccommon.handler;
 
+import cn.hutool.log.Log;
 import com.lab.rpccommon.spi.ISerializer;
 import com.lab.rpccommon.pojo.ProtocolMessage;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 
@@ -16,6 +18,7 @@ import javax.annotation.Resource;
  * @Description: TODO
  * @date 2025/4/19 22:42
  */
+@Slf4j
 @ChannelHandler.Sharable
 public class RPCEncoder extends MessageToByteEncoder {
     @Resource

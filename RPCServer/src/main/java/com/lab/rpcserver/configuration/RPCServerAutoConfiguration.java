@@ -4,6 +4,7 @@ import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
 import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
+import com.lab.rpcserver.netty.handler.ServerHeartBeatHandler;
 import com.lab.rpcserver.zookeeper.IServerRegister;
 import com.lab.rpcserver.zookeeper.ServerRegister;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -52,6 +53,11 @@ public class RPCServerAutoConfiguration implements CommandLineRunner {
     @ConditionalOnMissingBean(IServerRegister.class)
     public IServerRegister loadBalance(){
         return Utils.getInstanceBySPI(IServerRegister.class);
+    }
+
+    @Bean
+    public ServerHeartBeatHandler serverHeartBeatHandler(){
+        return new ServerHeartBeatHandler();
     }
 
     @Override

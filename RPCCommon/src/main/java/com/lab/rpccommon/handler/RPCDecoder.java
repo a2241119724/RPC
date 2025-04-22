@@ -1,18 +1,13 @@
 package com.lab.rpccommon.handler;
 
 import com.lab.rpccommon.constant.ProtocolConstant;
-import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.pojo.RPCHeart;
+import com.lab.rpccommon.pojo.*;
 import com.lab.rpccommon.spi.ISerializer;
-import com.lab.rpccommon.pojo.ProtocolMessage;
-import com.lab.rpccommon.pojo.RPCRequest;
-import com.lab.rpccommon.pojo.RPCResponse;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import org.springframework.lang.Nullable;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -57,9 +52,12 @@ public class RPCDecoder extends MessageToMessageDecoder<ByteBuf> {
                 RPCResponse response = serializer.deserialize(bodyBytes, RPCResponse.class);
                 list.add(new ProtocolMessage(header, response));
                 break;
-            case HEART_BEAT:
-                list.add(new ProtocolMessage(header, new RPCHeart()));
-                break;
+            case HEART_REQUEST:
+                RPCHeartRequest heartRequest = serializer.deserialize(bodyBytes, RPCHeartRequest.class);
+                list.add(new ProtocolMessage(header, heartRequest));
+            case HEART_RESPONSE:
+                serializer.deserialize(bodyBytes, RPCHeartResponse.class);
+                // list.add(new ProtocolMessage(header, heart));
             case OTHERS:
                 break;
             default:

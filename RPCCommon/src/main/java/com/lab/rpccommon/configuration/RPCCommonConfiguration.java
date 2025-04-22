@@ -1,6 +1,5 @@
 package com.lab.rpccommon.configuration;
 
-import com.lab.rpccommon.handler.NettyHeartHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
 import com.lab.rpccommon.spi.ISerializer;
@@ -32,10 +31,5 @@ public class RPCCommonConfiguration {
     @Bean
     public RPCDecoder rpcDecoder(){
         return new RPCDecoder();
-    }
-
-    @Bean
-    public NettyHeartHandler nettyHeartHandler(){
-        return new NettyHeartHandler();
     }
 }

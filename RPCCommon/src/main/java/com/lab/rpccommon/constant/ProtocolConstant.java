@@ -11,4 +11,8 @@ public interface ProtocolConstant {
 
     // 协议版本号
     byte PROTOCOL_VERSION = 0x1;
+
+    int MAX_FRAME_LENGTH = 8192;
+
+    int HEART_TIME = 60;
 }

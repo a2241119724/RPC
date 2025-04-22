@@ -24,7 +24,7 @@ public class ProtocolMessage<T> {
         // 版本号
         @Builder.Default
         private byte version = ProtocolConstant.PROTOCOL_VERSION;
-        // 消息类型 (请求 / 响应)
+        // 消息类型 (请求 / 响应 / 心跳)
         private byte type;
         // 响应状态 (成功 / 失败)
         @Builder.Default

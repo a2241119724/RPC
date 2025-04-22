@@ -1,27 +1,23 @@
 package com.lab.rpcserver.netty;
 
-import com.lab.rpccommon.handler.NettyHeartHandler;
+import com.lab.rpccommon.constant.ProtocolConstant;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
-import com.lab.rpccommon.pojo.ProtocolMessage;
-import com.lab.rpccommon.pojo.RPCRequest;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
+import com.lab.rpcserver.netty.handler.ServerHeartBeatHandler;
 import com.lab.rpcserver.property.NettyServerProperty;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import org.springframework.stereotype.Controller;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author lab
@@ -40,9 +36,7 @@ public class NettyServer {
     @Resource
     private RPCDecoder rpcDecoder;
     @Resource
-    private NettyHeartHandler nettyHeartHandler;
-
-    private static final int MAX_FRAME_LENGTH = 1024;
+    private ServerHeartBeatHandler serverHeartBeatHandler;
 
     public void start() throws InterruptedException {
         NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("Boss"));
@@ -57,10 +51,11 @@ public class NettyServer {
                         // out
                         ch.pipeline().addLast(rpcEncoder);
                         // in
-                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(MAX_FRAME_LENGTH,
-                                12,4));
+                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(ProtocolConstant.MAX_FRAME_LENGTH,
+                            12,4));
                         ch.pipeline().addLast(rpcDecoder);
-                        ch.pipeline().addLast(nettyHeartHandler);
+                        ch.pipeline().addLast(new IdleStateHandler(ProtocolConstant.HEART_TIME,0,0, TimeUnit.SECONDS));
+                        ch.pipeline().addLast(serverHeartBeatHandler);
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 }).bind(property.getHost(), property.getPort()).sync();
