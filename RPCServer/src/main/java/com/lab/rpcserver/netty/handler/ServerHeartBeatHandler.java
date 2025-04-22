@@ -1,7 +1,7 @@
 package com.lab.rpcserver.netty.handler;
 
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.pojo.ProtocolMessage;
+import com.lab.rpccommon.message.ProtocolMessage;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler;

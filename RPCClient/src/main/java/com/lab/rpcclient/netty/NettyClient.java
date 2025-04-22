@@ -3,12 +3,14 @@ package com.lab.rpcclient.netty;
 import com.lab.rpcclient.netty.handler.ClientHeartBeatHandler;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
 import com.lab.rpccommon.constant.ProtocolConstant;
+import com.lab.rpccommon.handler.HeartResponseHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
 import com.lab.rpccommon.utils.Utils;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -16,6 +18,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -35,14 +38,17 @@ public class NettyClient {
     private RPCDecoder rpcDecoder;
     @Resource
     private ClientHeartBeatHandler clientHeartBeatHandler;
+    @Resource
+    private HeartResponseHandler heartResponseHandler;
 
     private Bootstrap bootstrap;
-    private volatile Map<String, Channel> channels;
     private NettyClientHandler nettyClientHandler;
+
+    private volatile Map<String, Channel> channels;
 
     public NettyClient(){
         channels = new ConcurrentHashMap<>();
-        nettyClientHandler = Utils.getBean(NettyClientHandler.class);
+        nettyClientHandler = new NettyClientHandler();
         NioEventLoopGroup worker = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
         bootstrap.group(worker)
@@ -58,6 +64,7 @@ public class NettyClient {
                 ch.pipeline().addLast(rpcDecoder);
                 ch.pipeline().addLast(new IdleStateHandler(0,ProtocolConstant.HEART_TIME / 2,0,TimeUnit.SECONDS));
                 ch.pipeline().addLast(clientHeartBeatHandler);
+                ch.pipeline().addLast(heartResponseHandler);
                 ch.pipeline().addLast(nettyClientHandler);
                 }
             });

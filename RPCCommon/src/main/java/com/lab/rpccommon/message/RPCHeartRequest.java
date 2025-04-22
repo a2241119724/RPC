@@ -1,4 +1,4 @@
-package com.lab.rpccommon.pojo;
+package com.lab.rpccommon.message;
 
 import lombok.Builder;
 

@@ -2,7 +2,7 @@ package com.lab.rpccommon.handler;
 
 import com.lab.rpccommon.constant.ProtocolConstant;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.pojo.*;
+import com.lab.rpccommon.message.*;
 import com.lab.rpccommon.spi.ISerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
@@ -56,8 +56,8 @@ public class RPCDecoder extends MessageToMessageDecoder<ByteBuf> {
                 RPCHeartRequest heartRequest = serializer.deserialize(bodyBytes, RPCHeartRequest.class);
                 list.add(new ProtocolMessage(header, heartRequest));
             case HEART_RESPONSE:
-                serializer.deserialize(bodyBytes, RPCHeartResponse.class);
-                // list.add(new ProtocolMessage(header, heart));
+                RPCHeartResponse heartResponse = serializer.deserialize(bodyBytes, RPCHeartResponse.class);
+                 list.add(new ProtocolMessage(header, heartResponse));
             case OTHERS:
                 break;
             default:

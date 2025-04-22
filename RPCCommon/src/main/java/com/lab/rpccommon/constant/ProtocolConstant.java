@@ -14,5 +14,5 @@ public interface ProtocolConstant {
 
     int MAX_FRAME_LENGTH = 8192;
 
-    int HEART_TIME = 60;
+    int HEART_TIME = 10;
 }

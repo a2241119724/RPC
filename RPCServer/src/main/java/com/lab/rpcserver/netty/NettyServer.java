@@ -1,6 +1,7 @@
 package com.lab.rpcserver.netty;
 
 import com.lab.rpccommon.constant.ProtocolConstant;
+import com.lab.rpccommon.handler.HeartResponseHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
@@ -37,6 +38,8 @@ public class NettyServer {
     private RPCDecoder rpcDecoder;
     @Resource
     private ServerHeartBeatHandler serverHeartBeatHandler;
+    @Resource
+    private HeartResponseHandler heartResponseHandler;
 
     public void start() throws InterruptedException {
         NioEventLoopGroup boss = new NioEventLoopGroup(1, new DefaultThreadFactory("Boss"));
@@ -56,6 +59,7 @@ public class NettyServer {
                         ch.pipeline().addLast(rpcDecoder);
                         ch.pipeline().addLast(new IdleStateHandler(ProtocolConstant.HEART_TIME,0,0, TimeUnit.SECONDS));
                         ch.pipeline().addLast(serverHeartBeatHandler);
+                        ch.pipeline().addLast(heartResponseHandler);
                         ch.pipeline().addLast(nettyServerHandler);
                     }
                 }).bind(property.getHost(), property.getPort()).sync();

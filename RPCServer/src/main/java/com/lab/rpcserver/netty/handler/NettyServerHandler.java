@@ -2,9 +2,10 @@ package com.lab.rpcserver.netty.handler;
 
 import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.pojo.ProtocolMessage;
-import com.lab.rpccommon.pojo.RPCRequest;
-import com.lab.rpccommon.pojo.RPCResponse;
+import com.lab.rpccommon.message.ProtocolMessage;
+import com.lab.rpccommon.message.RPCHeartResponse;
+import com.lab.rpccommon.message.RPCRequest;
+import com.lab.rpccommon.message.RPCResponse;
 import com.lab.rpcserver.annotation.RPCServer;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
 import com.lab.rpcserver.property.NettyServerProperty;
@@ -65,6 +66,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
         RPCRequest request = protocolMessage.getBody();
         RPCResponse.RPCResponseBuilder responseBuilder = RPCResponse.builder();
         ProtocolMessage.Header.HeaderBuilder header = ProtocolMessage.Header.builder()
+                .requestId(protocolMessage.getHeader().getRequestId())
                 .type(ProtocolMessageTypeEnum.RESPONSE.getKey());
         ProtocolMessage<RPCResponse> _protocolMessage = new ProtocolMessage<>();
         if(!map.containsKey(request.getServerName())){
@@ -122,5 +124,10 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
                 throw new RuntimeException(e);
             }
         });
+    }
+
+    @Override
+    public boolean acceptInboundMessage(Object msg){
+        return ((ProtocolMessage)msg).getBody() instanceof RPCRequest;
     }
 }

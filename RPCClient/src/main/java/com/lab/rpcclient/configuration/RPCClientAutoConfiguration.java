@@ -24,11 +24,11 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class RPCClientAutoConfiguration implements CommandLineRunner {
-    @Bean
-    @Scope("prototype")
-    public NettyClientHandler getNettyClientHandler(){
-        return new NettyClientHandler();
-    }
+//    @Bean
+//    @Scope("prototype")
+//    public NettyClientHandler getNettyClientHandler(){
+//        return new NettyClientHandler();
+//    }
 
     @Bean
     public NettyClient nettyClient(){
@@ -38,11 +38,6 @@ public class RPCClientAutoConfiguration implements CommandLineRunner {
     @Bean
     public ClientAop clientAop(){
         return new ClientAop();
-    }
-
-    @Bean
-    public Utils beanUtils(){
-        return new Utils();
     }
 
     @Bean

@@ -3,8 +3,10 @@ package com.lab.rpcclient.netty.handler;
 import com.lab.rpcclient.netty.NettyClient;
 import com.lab.rpcclient.spi.faulttolerance.IFaultTolerance;
 import com.lab.rpccommon.enum_.ProtocolMessageStatusEnum;
-import com.lab.rpccommon.pojo.ProtocolMessage;
-import com.lab.rpccommon.pojo.RPCResponse;
+import com.lab.rpccommon.message.ProtocolMessage;
+import com.lab.rpccommon.message.RPCHeartRequest;
+import com.lab.rpccommon.message.RPCResponse;
+import com.lab.rpccommon.utils.Utils;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -12,7 +14,6 @@ import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
@@ -31,15 +32,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @ChannelHandler.Sharable
 public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCResponse>> {
-    @Resource
-    private IFaultTolerance faultTolerance;
-    @Resource
-    private NettyClient nettyClient;
-
     public static ThreadPoolExecutor executor = new ThreadPoolExecutor(
             NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
             TimeUnit.MINUTES, new ArrayBlockingQueue<>(200), new DefaultThreadFactory("Request"));
 
+    private IFaultTolerance faultTolerance;
+    private NettyClient nettyClient;
     private RPCResponse response;
     private ChannelHandlerContext ctx;
 
@@ -47,6 +45,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
         this.ctx = ctx;
+        nettyClient = Utils.getBean(NettyClient.class);
+        faultTolerance = Utils.getBean(IFaultTolerance.class);
     }
 
     @Override
@@ -95,5 +95,10 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
         } else {
             log.error("业务异常", cause);
         }
+    }
+
+    @Override
+    public boolean acceptInboundMessage(Object msg){
+        return ((ProtocolMessage)msg).getBody() instanceof RPCResponse;
     }
 }

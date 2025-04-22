@@ -1,10 +1,10 @@
 package com.lab.rpcclient.netty.handler;
 
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
-import com.lab.rpccommon.pojo.ProtocolMessage;
-import com.lab.rpccommon.pojo.RPCHeartRequest;
-import com.lab.rpccommon.pojo.RPCHeartResponse;
-import io.netty.channel.ChannelDuplexHandler;
+import com.lab.rpccommon.message.ProtocolMessage;
+import com.lab.rpccommon.message.RPCHeartRequest;
+import com.lab.rpccommon.message.RPCHeartResponse;
+import com.lab.rpccommon.message.RPCRequest;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @ChannelHandler.Sharable
-public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<RPCHeartRequest> {
+public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCHeartRequest>> {
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {
@@ -32,7 +32,12 @@ public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<RPCHeart
                 // 线程池被wait,EventLoop被线程池的get() pack
                 // visualVM
                 log.info("发送心跳");
-                ctx.writeAndFlush(getHeartResponse());
+                ProtocolMessage.Header header = ProtocolMessage.Header.builder()
+                        .type(ProtocolMessageTypeEnum.HEART_RESPONSE.getKey()).build();
+                ProtocolMessage<RPCHeartResponse> protocolMessage = new ProtocolMessage<>();
+                protocolMessage.setHeader(header);
+                protocolMessage.setBody(RPCHeartResponse.builder().build());
+                ctx.writeAndFlush(protocolMessage);
             }
         } else {
             super.userEventTriggered(ctx, evt);
@@ -47,16 +52,18 @@ public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<RPCHeart
      * @throws Exception
      */
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, RPCHeartRequest msg) throws Exception {
-        ctx.writeAndFlush(getHeartResponse());
-    }
-
-    private ProtocolMessage<RPCHeartResponse> getHeartResponse(){
+    protected void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RPCHeartRequest> msg) throws Exception {
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
+                .requestId(msg.getHeader().getRequestId())
                 .type(ProtocolMessageTypeEnum.HEART_RESPONSE.getKey()).build();
         ProtocolMessage<RPCHeartResponse> protocolMessage = new ProtocolMessage<>();
         protocolMessage.setHeader(header);
         protocolMessage.setBody(RPCHeartResponse.builder().build());
-        return protocolMessage;
+        ctx.writeAndFlush(protocolMessage);
+    }
+
+    @Override
+    public boolean acceptInboundMessage(Object msg){
+        return ((ProtocolMessage)msg).getBody() instanceof RPCHeartRequest;
     }
 }

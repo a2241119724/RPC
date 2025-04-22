@@ -1,5 +1,6 @@
 package com.lab.rpccommon.configuration;
 
+import com.lab.rpccommon.handler.HeartResponseHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
 import com.lab.rpccommon.spi.ISerializer;
@@ -31,5 +32,15 @@ public class RPCCommonConfiguration {
     @Bean
     public RPCDecoder rpcDecoder(){
         return new RPCDecoder();
+    }
+
+    @Bean
+    public HeartResponseHandler heartResponseHandler(){
+        return new HeartResponseHandler();
+    }
+
+    @Bean
+    public Utils utils(){
+        return new Utils();
     }
 }
