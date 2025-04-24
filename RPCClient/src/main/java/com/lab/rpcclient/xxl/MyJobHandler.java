@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 
 /**
- * @author fueen
- * 编写自己的定时任务Handler
- * 继承IJobHandler
- *
+ * @author lab
+ * @Title: MyJobHandler
+ * @ProjectName RPC
+ * @Description: XxlJob相关
+ * @date 2025/4/20 18:38
  */
 public class MyJobHandler{
     @XxlJob(value = "MyJobHandler")

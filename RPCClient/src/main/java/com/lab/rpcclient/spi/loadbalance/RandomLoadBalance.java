@@ -5,9 +5,9 @@ import java.util.Random;
 
 /**
  * @author lab
- * @Title: RandomLoadBalence
+ * @Title: RandomLoadBalance
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 随机负载均衡
  * @date 2025/4/20 18:38
  */
 public class RandomLoadBalance implements ILoadBalance{

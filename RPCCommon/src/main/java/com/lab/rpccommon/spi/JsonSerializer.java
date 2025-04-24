@@ -7,7 +7,7 @@ import com.alibaba.fastjson.JSON;
  * @author lab
  * @Title: Serializer
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Json序列化
  * @date 2025/4/19 16:16
  */
 public class JsonSerializer implements ISerializer{

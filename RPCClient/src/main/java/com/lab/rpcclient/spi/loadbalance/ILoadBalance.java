@@ -6,7 +6,7 @@ import java.util.List;
  * @author lab
  * @Title: ILoadBalance
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 负载均衡
  * @date 2025/4/20 18:31
  */
 public interface ILoadBalance {

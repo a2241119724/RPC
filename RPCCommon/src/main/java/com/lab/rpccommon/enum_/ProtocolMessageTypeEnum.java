@@ -3,7 +3,11 @@ package com.lab.rpccommon.enum_;
 import lombok.Getter;
 
 /**
- * 协议消息的类型枚举
+ * @author lab
+ * @Title: ProtocolMessageTypeEnum
+ * @ProjectName RPC
+ * @Description: 自定义协议类型
+ * @date 2025/4/21 1:04
  */
 @Getter
 public enum ProtocolMessageTypeEnum {

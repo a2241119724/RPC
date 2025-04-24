@@ -14,7 +14,7 @@ import javax.annotation.Resource;
  * @author lab
  * @Title: RPCEncoder
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 编码自定义协议
  * @date 2025/4/19 22:42
  */
 @Slf4j

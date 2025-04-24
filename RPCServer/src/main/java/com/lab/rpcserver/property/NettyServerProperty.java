@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
  * @author lab
  * @Title: NettyServerProperty
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Netty服务属性
  * @date 2025/4/11 21:21
  */
 @Data

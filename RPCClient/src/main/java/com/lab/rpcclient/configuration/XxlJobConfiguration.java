@@ -6,6 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author lab
+ * @Title: XxlJobConfiguration
+ * @ProjectName RPC
+ * @Description: 配置相关XxlJob的Bean
+ * @date 2025/4/14 23:16
+ */
 @Slf4j
 @Configuration
 public class XxlJobConfiguration {

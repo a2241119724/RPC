@@ -26,15 +26,14 @@ import java.util.concurrent.TimeUnit;
  * @author lab
  * @Title: NettyClientHandler
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 对于自定义协议的处理
  * @date 2025/4/19 23:00
  */
 @Slf4j
-@ChannelHandler.Sharable
 public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RPCResponse>> {
     public static ThreadPoolExecutor executor = new ThreadPoolExecutor(
-            NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
-            TimeUnit.MINUTES, new ArrayBlockingQueue<>(200), new DefaultThreadFactory("Request"));
+        NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
+        TimeUnit.MINUTES, new ArrayBlockingQueue<>(1000), new DefaultThreadFactory("Request"));
 
     private IFaultTolerance faultTolerance;
     private NettyClient nettyClient;

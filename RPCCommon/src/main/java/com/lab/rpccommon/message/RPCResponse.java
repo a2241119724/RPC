@@ -8,7 +8,7 @@ import lombok.Data;
  * @author lab
  * @Title: RPCResponse
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 自定义响应协议Body
  * @date 2025/4/9 19:35
  */
 @Data

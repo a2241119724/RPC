@@ -8,6 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @param <T> 协议中Body类型
+ * @author lab
+ * @Title: ProtocolMessage
+ * @ProjectName RPC
+ * @Description: 协议结构
+ * @date 2025/4/19 22:43
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

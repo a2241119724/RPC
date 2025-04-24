@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Scope;
  * @author lab
  * @Title: ClientConfiguration
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 配置相关的Bean
  * @date 2025/4/14 23:16
  */
 @Configuration

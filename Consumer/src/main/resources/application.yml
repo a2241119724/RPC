@@ -9,5 +9,5 @@ rpc:
 server:
   tomcat:
     threads:
-      max: 1000
-    accept-count: 1000
+      max: 200
+    accept-count: 100

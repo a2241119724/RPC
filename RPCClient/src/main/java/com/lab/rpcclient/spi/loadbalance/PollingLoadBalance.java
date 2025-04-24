@@ -6,7 +6,7 @@ import java.util.List;
  * @author lab
  * @Title: PollingLoadBalance
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 轮询负载均衡
  * @date 2025/4/20 18:42
  */
 public class PollingLoadBalance implements ILoadBalance{

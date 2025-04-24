@@ -21,7 +21,7 @@ import javax.annotation.Resource;
  * @author lab
  * @Title: RPCServerAutoConfiguration
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 配置相关Bean
  * @date 2025/4/18 22:09
  */
 @Configuration

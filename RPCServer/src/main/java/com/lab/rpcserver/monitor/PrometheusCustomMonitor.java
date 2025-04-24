@@ -6,6 +6,13 @@ import io.micrometer.core.instrument.Timer;
 import lombok.Getter;
 import javax.annotation.PostConstruct;
 
+/**
+ * @author lab
+ * @Title: PrometheusCustomMonitor
+ * @ProjectName RPC
+ * @Description: 可视化相关数据
+ * @date 2025/4/18 22:09
+ */
 public class PrometheusCustomMonitor {
     @Getter
     private Counter reportDialRequestCount;

@@ -6,19 +6,14 @@ import com.lab.rpccommon.constant.ProtocolConstant;
 import com.lab.rpccommon.handler.HeartResponseHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
-import com.lab.rpccommon.utils.Utils;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelInitializer;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -28,7 +23,7 @@ import java.util.concurrent.*;
  * @author lab
  * @Title: NettyClient
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 配置Netty连接
  * @date 2025/4/9 17:19
  */
 public class NettyClient {
@@ -41,51 +36,48 @@ public class NettyClient {
     @Resource
     private HeartResponseHandler heartResponseHandler;
 
-    private Bootstrap bootstrap;
-    private NettyClientHandler nettyClientHandler;
-
-    private volatile Map<String, Channel> channels;
+    private NioEventLoopGroup worker;
+    private volatile Map<String, NettyClientHandler> handlers;
 
     public NettyClient(){
-        channels = new ConcurrentHashMap<>();
-        nettyClientHandler = new NettyClientHandler();
-        NioEventLoopGroup worker = new NioEventLoopGroup();
-        bootstrap = new Bootstrap();
-        bootstrap.group(worker)
-            .channel(NioSocketChannel.class)
-            .handler(new ChannelInitializer<SocketChannel>() {
-                @Override
-                protected void initChannel(SocketChannel ch) throws Exception {
-                // out
-                ch.pipeline().addLast(rpcEncoder);
-                // in
-                ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(ProtocolConstant.MAX_FRAME_LENGTH,
-                    12, 4));
-                ch.pipeline().addLast(rpcDecoder);
-                ch.pipeline().addLast(new IdleStateHandler(0,ProtocolConstant.HEART_TIME / 2,0,TimeUnit.SECONDS));
-                ch.pipeline().addLast(clientHeartBeatHandler);
-                ch.pipeline().addLast(heartResponseHandler);
-                ch.pipeline().addLast(nettyClientHandler);
-                }
-            });
+        handlers = new ConcurrentHashMap<>();
+        worker = new NioEventLoopGroup();
     }
 
     public NettyClientHandler getConnection(InetSocketAddress serverAddress){
-        channels.computeIfAbsent(serverAddress.toString(), k->createConnection(serverAddress));
-        return nettyClientHandler;
+        return handlers.computeIfAbsent(serverAddress.toString(), k->createConnection(serverAddress));
     }
 
     public void removeConnect(InetSocketAddress serverAddress){
-        channels.remove(serverAddress.toString());
+        handlers.remove(serverAddress.toString());
     }
 
-    public Channel createConnection(InetSocketAddress serverAddress){
-        ChannelFuture future = null;
+    public NettyClientHandler createConnection(InetSocketAddress serverAddress){
+        NettyClientHandler nettyClientHandler = new NettyClientHandler();
+        Bootstrap bootstrap = new Bootstrap();
         try {
-            future = bootstrap.connect(serverAddress.getAddress().getHostAddress(), serverAddress.getPort()).sync();
+            // 长连接配置
+            bootstrap.option(ChannelOption.SO_KEEPALIVE, true)  // 启用 TCP keepalive
+                .option(ChannelOption.TCP_NODELAY, true)
+                .group(worker).channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel ch){
+                        // out
+                        ch.pipeline().addLast(rpcEncoder);
+                        // in
+                        ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(ProtocolConstant.MAX_FRAME_LENGTH,
+                                12, 4));
+                        ch.pipeline().addLast(rpcDecoder);
+                        ch.pipeline().addLast(new IdleStateHandler(0,ProtocolConstant.HEART_TIME / 2,0,TimeUnit.SECONDS));
+                        ch.pipeline().addLast(clientHeartBeatHandler);
+                        ch.pipeline().addLast(heartResponseHandler);
+                        ch.pipeline().addLast(nettyClientHandler);
+                    }
+            }).connect(serverAddress.getAddress().getHostAddress(), serverAddress.getPort()).sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return future.channel();
+        return nettyClientHandler;
     }
 }

@@ -6,7 +6,7 @@ import lombok.Getter;
  * @author lab
  * @Title: ProtocolMessageStatusEnum
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 自定义协议状态
  * @date 2025/4/21 1:04
  */
 @Getter

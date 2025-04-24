@@ -1,6 +1,13 @@
 package com.lab.rpccommon.constant;
 
 
+/**
+ * @author lab
+ * @Title: ProtocolConstant
+ * @ProjectName RPC
+ * @Description: 协议常量配置
+ * @date 2025/4/21 0:22
+ */
 public interface ProtocolConstant {
 
     // 消息头长度
@@ -14,5 +21,5 @@ public interface ProtocolConstant {
 
     int MAX_FRAME_LENGTH = 8192;
 
-    int HEART_TIME = 10;
+    int HEART_TIME = 60;
 }

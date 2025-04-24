@@ -16,7 +16,7 @@ import java.util.List;
  * @author lab
  * @Title: RPCDecoder
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 通过Type解码协议
  * @date 2025/4/19 22:43
  */
 @ChannelHandler.Sharable

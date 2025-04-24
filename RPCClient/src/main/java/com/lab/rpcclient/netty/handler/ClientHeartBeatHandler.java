@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author lab
  * @Title: ClientHeartBeatHandler
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 心跳处理，若长时间没有写事件，则发送心跳
  * @date 2025/4/22 22:19
  */
 @Slf4j

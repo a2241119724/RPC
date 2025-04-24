@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author lab
  * @Title: RegisterCenterProperty
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 注册中心属性
  * @date 2025/4/18 22:32
  */
 @Data

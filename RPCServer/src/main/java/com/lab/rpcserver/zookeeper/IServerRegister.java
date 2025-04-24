@@ -4,7 +4,7 @@ package com.lab.rpcserver.zookeeper;
  * @author lab
  * @Title: IServerRegister
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 服务注册
  * @date 2025/4/12 22:02
  */
 public interface IServerRegister {

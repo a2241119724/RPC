@@ -6,7 +6,7 @@ import lombok.Data;
  * @author lab
  * @Title: AFaultTolerance
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 重试机制的公共操作
  * @date 2025/4/21 1:17
  */
 @Data

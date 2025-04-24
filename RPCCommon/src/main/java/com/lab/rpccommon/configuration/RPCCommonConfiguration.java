@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
  * @author lab
  * @Title: RPCCommonConfiguration
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 注册公共的Bean
  * @date 2025/4/21 0:22
  */
 @Configuration

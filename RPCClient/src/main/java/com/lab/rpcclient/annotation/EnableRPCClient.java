@@ -12,7 +12,7 @@ import java.lang.annotation.*;
  * @author lab
  * @Title: EnableRPCClient
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 注入第三方包(这个包)的相关Bean
  * @date 2025/4/19 13:40
  */
 @Documented

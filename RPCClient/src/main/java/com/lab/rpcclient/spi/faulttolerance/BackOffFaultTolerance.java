@@ -1,20 +1,13 @@
 package com.lab.rpcclient.spi.faulttolerance;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
 /**
  * @author lab
  * @Title: RetryFaultTolerance
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 指数回退重试机制
  * @date 2025/4/21 0:12
  */
-public class RetryFaultTolerance extends AFaultTolerance{
+public class BackOffFaultTolerance extends AFaultTolerance{
     private float initialDelay = 0.5f;
     private float backoffFactor = 1.0f;
 

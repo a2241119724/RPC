@@ -4,7 +4,7 @@ package com.lab.rpccommon.spi;
  * @author lab
  * @Title: ISerializer
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: 序列化
  * @date 2025/4/19 16:17
  */
 public interface ISerializer{
