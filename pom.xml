@@ -11,6 +11,9 @@
         <module>Consumer</module>
         <module>Provider</module>
         <module>Common</module>
+        <module>RPCClient</module>
+        <module>RPCCommon</module>
+        <module>RPCServer</module>
     </modules>
     <packaging>pom</packaging>
     <properties>

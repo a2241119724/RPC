@@ -1,16 +1,15 @@
 package com.lab.rpcserver.configuration;
 
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
 import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
 import com.lab.rpcserver.netty.handler.ServerHeartBeatHandler;
-import com.lab.rpcserver.zookeeper.IServerRegister;
-import com.lab.rpcserver.zookeeper.ServerRegister;
+import com.lab.rpcserver.server.IServerRegister;
+import com.lab.rpcserver.server.zookeeper.ZKServerRegister;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.prometheus.PrometheusConfig;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,13 +44,8 @@ public class RPCServerAutoConfiguration implements CommandLineRunner {
     }
 
     @Bean
-    public ServerRegister serverRegister(){
-        return new ServerRegister();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(IServerRegister.class)
-    public IServerRegister loadBalance(){
+    public IServerRegister serverRegister(){
         return Utils.getInstanceBySPI(IServerRegister.class);
     }
 

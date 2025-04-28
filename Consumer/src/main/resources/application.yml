@@ -1,6 +1,7 @@
 spring:
   application:
     name: consumer
+  cloud:
 rpc:
   register:
     zookeeper:

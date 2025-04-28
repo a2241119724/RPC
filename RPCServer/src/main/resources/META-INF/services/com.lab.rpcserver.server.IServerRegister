@@ -1,0 +1,2 @@
+com.lab.rpcserver.server.zookeeper.ZKServerRegister
+com.lab.rpcserver.server.nacos.NacosServerRegister

@@ -2,7 +2,8 @@ package com.lab.rpcclient.netty;
 
 import com.lab.rpcclient.annotation.RPCResource;
 import com.lab.rpcclient.netty.handler.NettyClientHandler;
-import com.lab.rpcclient.zookeeper.ServerDiscovery;
+import com.lab.rpcclient.server.IServerDiscovery;
+import com.lab.rpcclient.server.zookeeper.ZKServerDiscovery;
 import com.lab.rpccommon.enum_.ProtocolMessageTypeEnum;
 import com.lab.rpccommon.message.ProtocolMessage;
 import com.lab.rpccommon.message.RPCRequest;
@@ -34,7 +35,7 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
     @Resource
     private NettyClient nettyClient;
     @Resource
-    private ServerDiscovery serverDiscovery;
+    private IServerDiscovery serverDiscovery;
 
     private Map<String, Object> proxy = new HashMap<>();
 

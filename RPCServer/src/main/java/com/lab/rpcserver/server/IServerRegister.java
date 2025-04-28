@@ -1,4 +1,4 @@
-package com.lab.rpcserver.zookeeper;
+package com.lab.rpcserver.server;
 
 /**
  * @author lab

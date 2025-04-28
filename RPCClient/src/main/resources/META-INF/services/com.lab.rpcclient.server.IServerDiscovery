@@ -1,0 +1,2 @@
+com.lab.rpcclient.server.zookeeper.ZKServerDiscovery
+com.lab.rpcclient.server.nacos.NacosServerDiscovery

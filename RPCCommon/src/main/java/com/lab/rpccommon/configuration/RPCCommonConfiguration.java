@@ -1,5 +1,6 @@
 package com.lab.rpccommon.configuration;
 
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.lab.rpccommon.handler.HeartResponseHandler;
 import com.lab.rpccommon.handler.RPCDecoder;
 import com.lab.rpccommon.handler.RPCEncoder;
@@ -42,5 +43,12 @@ public class RPCCommonConfiguration {
     @Bean
     public Utils utils(){
         return new Utils();
+    }
+
+    @Bean
+    public NacosDiscoveryProperties nacosProperties() {
+        NacosDiscoveryProperties properties = new NacosDiscoveryProperties();
+        properties.setRegisterEnabled(false);
+        return properties;
     }
 }

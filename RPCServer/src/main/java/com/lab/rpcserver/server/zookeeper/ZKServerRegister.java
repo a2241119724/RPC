@@ -1,6 +1,7 @@
-package com.lab.rpcserver.zookeeper;
+package com.lab.rpcserver.server.zookeeper;
 
 import com.lab.rpcserver.property.RegisterCenterProperty;
+import com.lab.rpcserver.server.IServerRegister;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -17,11 +18,10 @@ import javax.annotation.Resource;
  * @date 2025/4/12 22:03
  */
 @Slf4j
-public class ServerRegister implements IServerRegister{
+public class ZKServerRegister implements IServerRegister {
     @Resource
     private RegisterCenterProperty registerCenterProperty;
 
-    private volatile static ServerRegister Instance;
     private CuratorFramework client;
     private final String NAMESPACE = "RPCServers";
 

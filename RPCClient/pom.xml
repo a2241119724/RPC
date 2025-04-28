@@ -37,12 +37,6 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.83_noneautotype</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-framework -->
-        <dependency>
-            <groupId>org.apache.curator</groupId>
-            <artifactId>curator-framework</artifactId>
-            <version>5.8.0</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/com.xuxueli/xxl-job-core -->
         <dependency>
             <groupId>com.xuxueli</groupId>
@@ -62,19 +56,6 @@
                     <target>1.8</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <executions>
-                    <execution>
-                        <id>repackage</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

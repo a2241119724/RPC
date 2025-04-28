@@ -1,6 +1,8 @@
-package com.lab.rpcclient.zookeeper;
+package com.lab.rpcclient.server.zookeeper;
 
 import com.lab.rpcclient.property.RegisterCenterProperty;
+import com.lab.rpcclient.server.AServerDiscovery;
+import com.lab.rpcclient.server.IServerDiscovery;
 import com.lab.rpcclient.spi.loadbalance.ILoadBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
@@ -25,19 +27,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @date 2025/4/12 22:19
  */
 @Slf4j
-public class ServerDiscovery implements IServerDiscovery{
+public class ZKServerDiscovery extends AServerDiscovery {
     @Resource
     private RegisterCenterProperty registerCenterProperty;
-    @Resource
-    private ILoadBalance loadBalance;
 
-    private Map<String, List<InetSocketAddress>> serverCache = new ConcurrentHashMap<>();
     private CuratorFramework client;
     private final String NAMESPACE = "RPCServers";
-    private Random random = new Random();
 
     @Override
-    public void connect() {
+    public void connect0() {
         ExponentialBackoffRetry retry = new ExponentialBackoffRetry(3000, 10);
         client = CuratorFrameworkFactory.builder()
                 .connectString(registerCenterProperty.getHost())
@@ -47,8 +45,6 @@ public class ServerDiscovery implements IServerDiscovery{
                 .namespace(NAMESPACE)
                 .build();
         client.start();
-        loadAllServices();
-        watchServices();
     }
 
     @Override
@@ -90,25 +86,6 @@ public class ServerDiscovery implements IServerDiscovery{
                 }).forPath("/" + serverName);
             } catch (Exception e) {
                 e.printStackTrace();
-            }
-        });
-    }
-
-    public InetSocketAddress getInstance(String serverName){
-        if(!serverCache.containsKey(serverName)){
-            log.info("没有找到服务:" + serverName);
-            return null;
-        }
-        List<InetSocketAddress> addresses = serverCache.get(serverName);
-        return loadBalance.select(addresses);
-    }
-
-    public void info() {
-        serverCache.forEach((key, value)->{
-            System.out.println("==============================");
-            System.out.println(key);
-            for (InetSocketAddress address : value) {
-                System.out.println(address.getAddress() + " " + address.getPort());
             }
         });
     }

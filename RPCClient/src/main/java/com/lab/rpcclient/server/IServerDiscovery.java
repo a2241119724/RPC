@@ -1,4 +1,6 @@
-package com.lab.rpcclient.zookeeper;
+package com.lab.rpcclient.server;
+
+import java.net.InetSocketAddress;
 
 /**
  * @author lab
@@ -11,4 +13,5 @@ public interface IServerDiscovery {
     void connect();
     void loadAllServices();
     void watchServices();
+    InetSocketAddress getInstance(String serverName);
 }
