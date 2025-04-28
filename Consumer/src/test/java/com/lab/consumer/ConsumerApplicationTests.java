@@ -1,19 +1,28 @@
 package com.lab.consumer;
 
+import com.lab.rpccommon.message.ProtocolMessage;
+import com.lab.rpccommon.message.RPCRequest;
+import com.lab.rpccommon.message.proto.RPCRequestProto;
+import com.lab.rpccommon.spi.ISerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.annotation.Resource;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @SpringBootTest
 class ConsumerApplicationTests {
+    @Resource
+    private ISerializer serializer;
 
     @Test
     void contextLoads() {
-        ReentrantLock reentrantLock = new ReentrantLock();
-        Condition condition = reentrantLock.newCondition();
+        RPCRequest.RPCRequestBuilder builder = RPCRequest.builder().serverName("1").functionName("2")
+                .parameters(new String[]{"1"})
+                .parameterTypes(new Class[]{String.class});
+        byte[] serialize = serializer.serialize(builder.build());
+        System.out.println(serializer.deserialize(serialize, RPCRequest.class));
     }
-
 }

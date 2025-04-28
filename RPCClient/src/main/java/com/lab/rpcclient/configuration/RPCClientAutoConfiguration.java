@@ -51,9 +51,14 @@ public class RPCClientAutoConfiguration implements CommandLineRunner {
         return Utils.getInstanceBySPI(IServerDiscovery.class);
     }
 
+    /**
+     * 由于prototype和ConditionalOnMissingBean，不能添加多个
+     * 在创建第一个Bean之后，满足了Conditional
+     * @return
+     */
     @Bean
     @Scope("prototype")
-    @ConditionalOnMissingBean(IFaultTolerance.class)
+//    @ConditionalOnMissingBean(IFaultTolerance.class)
     public IFaultTolerance faultTolerance(){
         return Utils.getInstanceBySPI(IFaultTolerance.class);
     }

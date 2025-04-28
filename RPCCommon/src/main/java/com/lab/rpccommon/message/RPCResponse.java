@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author lab
  * @Title: RPCResponse
@@ -14,7 +16,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class RPCResponse {
+public class RPCResponse implements Serializable {
     private Object result;
     private String error;
 }

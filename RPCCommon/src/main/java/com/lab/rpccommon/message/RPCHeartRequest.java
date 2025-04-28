@@ -2,6 +2,8 @@ package com.lab.rpccommon.message;
 
 import lombok.Builder;
 
+import java.io.Serializable;
+
 /**
  * @author lab
  * @Title: RPCHeart
@@ -10,5 +12,5 @@ import lombok.Builder;
  * @date 2025/4/22 23:00
  */
 @Builder
-public class RPCHeartRequest {
+public class RPCHeartRequest implements Serializable {
 }

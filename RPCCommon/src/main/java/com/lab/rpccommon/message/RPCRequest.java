@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author lab
  * @Title: RPCRequest
@@ -14,7 +16,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class RPCRequest {
+public class RPCRequest implements Serializable {
     private String serverName;
     private String functionName;
     private Class[] parameterTypes;

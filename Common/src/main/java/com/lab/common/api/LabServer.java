@@ -7,7 +7,7 @@ package com.lab.common.api;
  * @Description: TODO
  * @date 2025/4/9 16:02
  */
-public interface LabServer {
+public interface LabServer{
     String getInfo();
 
     String getInfo(String str);

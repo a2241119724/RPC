@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package proto;
+option java_package = "com.lab.rpccommon.message.proto";
+
+message RPCResponse {
+  optional string result = 1;
+  optional string error = 2;
+}
