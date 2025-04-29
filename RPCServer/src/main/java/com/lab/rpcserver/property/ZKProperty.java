@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Data
 @ConfigurationProperties(prefix = "rpc.register.zookeeper")
-public class RegisterCenterProperty {
+public class ZKProperty {
     private String ip;
     private int port;
 

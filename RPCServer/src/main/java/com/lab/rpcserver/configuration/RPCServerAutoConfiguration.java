@@ -1,13 +1,11 @@
 package com.lab.rpcserver.configuration;
 
-import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.lab.rpccommon.utils.Utils;
 import com.lab.rpcserver.monitor.PrometheusCustomMonitor;
 import com.lab.rpcserver.netty.NettyServer;
 import com.lab.rpcserver.netty.handler.NettyServerHandler;
 import com.lab.rpcserver.netty.handler.ServerHeartBeatHandler;
 import com.lab.rpcserver.server.IServerRegister;
-import com.lab.rpcserver.server.zookeeper.ZKServerRegister;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

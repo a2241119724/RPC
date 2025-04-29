@@ -1,1 +1,2 @@
 com.lab.rpcclient.spi.faulttolerance.BackOffFaultTolerance
+com.lab.rpcclient.spi.faulttolerance.FixedFaultTolerance

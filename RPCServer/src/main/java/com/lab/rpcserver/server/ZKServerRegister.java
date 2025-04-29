@@ -1,7 +1,6 @@
-package com.lab.rpcserver.server.zookeeper;
+package com.lab.rpcserver.server;
 
-import com.lab.rpcserver.property.RegisterCenterProperty;
-import com.lab.rpcserver.server.IServerRegister;
+import com.lab.rpcserver.property.ZKProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -14,13 +13,13 @@ import javax.annotation.Resource;
  * @author lab
  * @Title: ServerRegister
  * @ProjectName RPC
- * @Description: 服务注册
+ * @Description: Zookeeper服务注册
  * @date 2025/4/12 22:03
  */
 @Slf4j
 public class ZKServerRegister implements IServerRegister {
     @Resource
-    private RegisterCenterProperty registerCenterProperty;
+    private ZKProperty ZKProperty;
 
     private CuratorFramework client;
     private final String NAMESPACE = "RPCServers";
@@ -29,7 +28,7 @@ public class ZKServerRegister implements IServerRegister {
     public void connect() {
         ExponentialBackoffRetry retry = new ExponentialBackoffRetry(3000, 10);
         client = CuratorFrameworkFactory.builder()
-                .connectString(registerCenterProperty.getHost())
+                .connectString(ZKProperty.getHost())
                 .sessionTimeoutMs(60 * 1000)
                 .connectionTimeoutMs(15 * 1000)
                 .retryPolicy(retry)

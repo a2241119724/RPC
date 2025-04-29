@@ -1,1 +1,1 @@
-com.lab.rpccommon.spi.ProtoSerializer
+com.lab.rpccommon.spi.JsonSerializer

@@ -11,6 +11,11 @@ rpc:
     zookeeper:
       ip: 192.168.1.120
       port: 2181
+    nacos:
+      ip: 192.168.1.120
+      port: 8858
+      username: nacos
+      password: nacos
 management:
   endpoints:
     web:

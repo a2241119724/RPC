@@ -8,7 +8,7 @@ import java.io.*;
  * @author lab
  * @Title: JavaSerializer
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Java自带序列化
  * @date 2025/4/28 15:45
  */
 public class JavaSerializer implements ISerializer{

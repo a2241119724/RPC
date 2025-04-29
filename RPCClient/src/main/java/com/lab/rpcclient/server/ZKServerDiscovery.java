@@ -1,4 +1,4 @@
-package com.lab.rpcclient.server.zookeeper;
+package com.lab.rpcclient.server;
 
 import com.lab.rpcclient.property.RegisterCenterProperty;
 import com.lab.rpcclient.server.AServerDiscovery;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author lab
  * @Title: ServerDiscovery
  * @ProjectName RPC
- * @Description: 服务发现
+ * @Description: Zookeeper服务发现
  * @date 2025/4/12 22:19
  */
 @Slf4j

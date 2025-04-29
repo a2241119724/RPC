@@ -91,7 +91,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
         } else if (cause instanceof IOException) {
             log.error("网络异常断开: {}", cause.getMessage());
             nettyClient.removeConnect((InetSocketAddress) ctx.channel().remoteAddress());
-            ctx.close();
+//            ctx.close();
         } else {
             log.error("业务异常", cause);
         }

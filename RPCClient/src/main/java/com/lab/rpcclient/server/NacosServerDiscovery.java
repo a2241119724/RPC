@@ -1,4 +1,4 @@
-package com.lab.rpcclient.server.nacos;
+package com.lab.rpcclient.server;
 
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.exception.NacosException;
@@ -13,6 +13,7 @@ import com.alibaba.nacos.api.naming.pojo.ServiceInfo;
 import com.lab.rpcclient.server.AServerDiscovery;
 import com.lab.rpcclient.server.IServerDiscovery;
 
+import javax.xml.transform.Source;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.Properties;
  * @author lab
  * @Title: NacosServerDiscovery
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Nacos服务发现
  * @date 2025/4/26 23:06
  */
 public class NacosServerDiscovery extends AServerDiscovery {
@@ -76,6 +77,7 @@ public class NacosServerDiscovery extends AServerDiscovery {
         }
         for (String server : servicesOfServer.getData()) {
             try {
+                // 服务列表会保存，不启用任何服务，就可以获得到对应的服务并监听
                 namingService.subscribe(server, new EventListener() {
                     @Override
                     public void onEvent(Event event) {

@@ -1,4 +1,4 @@
-package com.lab.rpcserver.server.nacos;
+package com.lab.rpcserver.server;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.cloud.nacos.discovery.NacosDiscoveryAutoConfiguration;
@@ -7,6 +7,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.lab.rpcserver.property.NacosProperty;
 import com.lab.rpcserver.server.IServerRegister;
 
 import javax.annotation.Resource;
@@ -17,19 +18,22 @@ import java.util.Properties;
  * @author lab
  * @Title: NacosServerRegister
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Nacos服务注册
  * @date 2025/4/26 17:01
  */
 public class NacosServerRegister implements IServerRegister {
+    @Resource
+    private NacosProperty nacosProperty;
+
     private NamingService namingService;
     private final String NAMESPACE = "public";
 
     @Override
     public void connect() {
         Properties properties = new Properties();
-        properties.put(PropertyKeyConst.SERVER_ADDR, "192.168.1.120:8858");
-        properties.put(PropertyKeyConst.USERNAME, "nacos");
-        properties.put(PropertyKeyConst.PASSWORD, "nacos");
+        properties.put(PropertyKeyConst.SERVER_ADDR, nacosProperty.getHost());
+        properties.put(PropertyKeyConst.USERNAME, nacosProperty.getUsername());
+        properties.put(PropertyKeyConst.PASSWORD, nacosProperty.getPassword());
         properties.put(PropertyKeyConst.NAMESPACE, NAMESPACE);
         try {
             namingService = NamingFactory.createNamingService(properties);
