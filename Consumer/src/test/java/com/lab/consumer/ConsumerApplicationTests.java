@@ -1,16 +1,11 @@
 package com.lab.consumer;
 
-import com.lab.rpccommon.message.ProtocolMessage;
 import com.lab.rpccommon.message.RPCRequest;
-import com.lab.rpccommon.message.proto.RPCRequestProto;
 import com.lab.rpccommon.spi.ISerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @SpringBootTest
 class ConsumerApplicationTests {

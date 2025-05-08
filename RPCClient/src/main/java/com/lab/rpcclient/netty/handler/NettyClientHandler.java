@@ -60,6 +60,7 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     }
 
     public RPCResponse send(ProtocolMessage<?> protocolMessage) throws InterruptedException, ExecutionException {
+        System.out.println(Thread.currentThread().getName());
         executor.submit(()->{
             if(faultTolerance == null) return;
             // 重试
