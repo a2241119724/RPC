@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream;
  * @author lab
  * @Title: JavaSerializer
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Kryo序列化
  * @date 2025/4/28 15:45
  */
 public class KryoSerializer implements ISerializer {

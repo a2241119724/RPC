@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author lab
  * @Title: NacosProperty
  * @ProjectName RPC
- * @Description: TODO
+ * @Description: Nacos配置
  * @date 2025/4/29 15:08
  */
 @Data
