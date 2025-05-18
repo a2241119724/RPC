@@ -14,6 +14,7 @@ import javax.annotation.Resource;
  * @Title: ServerRegister
  * @ProjectName RPC
  * @Description: Zookeeper服务注册
+ * 注意:需要再hosts文件中配置ZK的ip->host,不然会延迟10s左右
  * @date 2025/4/12 22:03
  */
 @Slf4j
