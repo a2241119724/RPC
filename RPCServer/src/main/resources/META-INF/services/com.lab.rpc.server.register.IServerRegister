@@ -1,0 +1,2 @@
+com.lab.rpc.server.register.ZooKeeperServerRegister
+com.lab.rpc.server.register.NacosServerRegister

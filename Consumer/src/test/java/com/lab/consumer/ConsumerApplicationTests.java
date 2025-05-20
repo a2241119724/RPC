@@ -1,7 +1,7 @@
 package com.lab.consumer;
 
-import com.lab.rpccommon.message.RPCRequest;
-import com.lab.rpccommon.spi.ISerializer;
+import com.lab.rpc.common.message.RpcRequest;
+import com.lab.rpc.common.spi.ISerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -14,10 +14,10 @@ class ConsumerApplicationTests {
 
     @Test
     void contextLoads() {
-        RPCRequest.RPCRequestBuilder builder = RPCRequest.builder().serverName("1").functionName("2")
+        RpcRequest.RpcRequestBuilder builder = RpcRequest.builder().serverName("1").functionName("2")
                 .parameters(new String[]{"1"})
                 .parameterTypes(new Class[]{String.class});
         byte[] serialize = serializer.serialize(builder.build());
-        System.out.println(serializer.deserialize(serialize, RPCRequest.class));
+        System.out.println(serializer.deserialize(serialize, RpcRequest.class));
     }
 }

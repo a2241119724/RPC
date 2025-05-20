@@ -1,13 +1,13 @@
 package com.lab.provider.service;
 
 import com.lab.common.api.LabServer;
-import com.lab.rpcserver.annotation.RPCServer;
+import com.lab.rpc.server.annotation.RPCServer;
 
 /**
  * @author lab
- * @Title: LabServiceImpl
- * @ProjectName RPC
- * @Description: 提供的具体服务
+ * @title LabServiceImpl
+ * @projectName RPC
+ * @description 提供的具体服务
  * @date 2025/4/9 16:04
  */
 @RPCServer

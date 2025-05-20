@@ -1,0 +1,4 @@
+com.lab.rpc.common.spi.JsonSerializer
+com.lab.rpc.common.spi.JavaSerializer
+com.lab.rpc.common.spi.KryoSerializer
+com.lab.rpc.common.spi.ProtoSerializer
