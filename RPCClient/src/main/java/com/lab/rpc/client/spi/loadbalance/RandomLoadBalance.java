@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author lab
@@ -14,6 +15,7 @@ import java.util.Random;
  */
 @Slf4j
 public class RandomLoadBalance implements ILoadBalance{
+    /** ThreadLocalRandom */
     private final Random random = new Random();
 
     @Override
