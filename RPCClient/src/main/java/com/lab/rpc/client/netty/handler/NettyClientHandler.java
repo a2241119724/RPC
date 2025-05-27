@@ -3,9 +3,12 @@ package com.lab.rpc.client.netty.handler;
 import com.lab.rpc.client.netty.NettyClient;
 import com.lab.rpc.client.spi.faulttolerance.IFaultTolerance;
 import com.lab.rpc.common.enumerate.ProtocolMessageStatusEnum;
+import com.lab.rpc.common.enumerate.ProtocolMessageTypeEnum;
 import com.lab.rpc.common.message.ProtocolMessage;
+import com.lab.rpc.common.message.RpcHeartResponse;
 import com.lab.rpc.common.message.RpcResponse;
 import com.lab.rpc.common.utils.Utils;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.NettyRuntime;
@@ -41,6 +44,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         super.channelActive(ctx);
+        // 预热
+        ClientHeartBeatHandler.heartResponse(ctx);
+        //
         this.ctx = ctx;
         nettyClient = Utils.getBean(NettyClient.class);
         faultTolerance = Utils.getBean(IFaultTolerance.class);
@@ -84,11 +90,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause){
         if (cause instanceof ClosedChannelException) {
             log.warn("连接被对方关闭: {}", ctx.channel().remoteAddress());
-            nettyClient.removeConnect((InetSocketAddress) ctx.channel().remoteAddress());
+            nettyClient.removeConnect((InetSocketAddress) ctx.channel().remoteAddress(), this);
             ctx.close();
         } else if (cause instanceof IOException) {
             log.error("网络异常断开: {}", cause.getMessage());
-            nettyClient.removeConnect((InetSocketAddress) ctx.channel().remoteAddress());
+            nettyClient.removeConnect((InetSocketAddress) ctx.channel().remoteAddress(), this);
             ctx.close();
         } else {
             log.error("业务异常", cause);

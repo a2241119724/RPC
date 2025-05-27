@@ -1,7 +1,7 @@
 package com.lab.consumer.controller;
 
 import com.lab.common.api.LabServer;
-import com.lab.rpc.client.annotation.RPCResource;
+import com.lab.rpc.client.annotation.RPCReference;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/rpc")
 public class RpcController {
-    @RPCResource
+    @RPCReference
     private LabServer labServer;
 
     @GetMapping("/{msg}")

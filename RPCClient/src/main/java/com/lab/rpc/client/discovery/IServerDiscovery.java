@@ -1,6 +1,7 @@
 package com.lab.rpc.client.discovery;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * @author lab
@@ -29,4 +30,11 @@ public interface IServerDiscovery {
      * @return 服务实例地址
      */
     InetSocketAddress getInstance(String serverName);
+
+    /**
+     * 获取所有服务实例
+     * @param serverName 服务接口名称
+     * @return 服务实例地址
+     */
+    List<InetSocketAddress> getAllInstance(String serverName);
 }

@@ -75,6 +75,8 @@ public class ZookeeperServerDiscovery extends AbstractServerDiscovery {
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
+                            nettyClient.preCreateConnection(serverName);
+                            info();
                         }
                     }
                 }).forPath("/" + serverName);

@@ -1,7 +1,6 @@
 spring:
   application:
     name: consumer
-  cloud:
 rpc:
   register:
     zookeeper:
@@ -12,3 +11,13 @@ server:
     threads:
       max: 200
     accept-count: 100
+#dubbo:
+#  registry:
+#    address: nacos://192.168.1.120:8858
+#  scan:
+#    base-packages: com.lab.consumer.controller
+#  application:
+#    name: consumer
+#  protocol:
+#    name: dubbo
+#    port: -1

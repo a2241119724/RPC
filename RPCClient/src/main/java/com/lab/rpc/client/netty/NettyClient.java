@@ -1,5 +1,7 @@
 package com.lab.rpc.client.netty;
 
+import cn.hutool.log.Log;
+import com.lab.rpc.client.discovery.IServerDiscovery;
 import com.lab.rpc.client.netty.handler.NettyClientHandler;
 import com.lab.rpc.client.netty.handler.ClientHeartBeatHandler;
 import com.lab.rpc.common.constant.ProtocolConstant;
@@ -13,10 +15,11 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -26,6 +29,7 @@ import java.util.concurrent.*;
  * @description 配置Netty连接
  * @date 2025/4/9 17:19
  */
+@Slf4j
 public class NettyClient {
     @Resource
     private RpcEncoder rpcEncoder;
@@ -35,21 +39,67 @@ public class NettyClient {
     private ClientHeartBeatHandler clientHeartBeatHandler;
     @Resource
     private HeartResponseHandler heartResponseHandler;
+    @Resource
+    private IServerDiscovery serverDiscovery;
 
     private final NioEventLoopGroup worker;
-    private volatile Map<String, NettyClientHandler> handlers;
+    /**
+     * String 服务名:IP
+     */
+    private volatile Map<String, List<NettyClientHandler>> handlers;
+
+    private static final int MAX_CONNECTIONS = 5;
+    private final Random random = new Random();
 
     public NettyClient(){
         handlers = new ConcurrentHashMap<>();
         worker = new NioEventLoopGroup();
     }
 
-    public NettyClientHandler getConnection(InetSocketAddress serverAddress){
-        return handlers.computeIfAbsent(serverAddress.toString(), k->createConnection(serverAddress));
+    public void preCreateConnection(String serverName){
+        for (InetSocketAddress inetSocketAddress : serverDiscovery.getAllInstance(serverName)) {
+            List<NettyClientHandler> handlers0 = new ArrayList<>();
+            String key = serverName+":"+inetSocketAddress;
+            if(handlers.containsKey(key) && handlers.get(key).size() >= MAX_CONNECTIONS){
+                continue;
+            }
+            for (int i = 0; i < MAX_CONNECTIONS; i++){
+                handlers0.add(createConnection(inetSocketAddress));
+            }
+            handlers.put(key, handlers0);
+        }
     }
 
-    public void removeConnect(InetSocketAddress serverAddress){
-        handlers.remove(serverAddress.toString());
+    public NettyClientHandler getConnection(String serverName){
+        InetSocketAddress instance = serverDiscovery.getInstance(serverName);
+        if(instance == null){
+            return null;
+        }
+        String key = serverName+":"+instance;
+        if(!handlers.containsKey(key)){
+            preCreateConnection(serverName);
+        }
+        return handlers.get(key).get(random.nextInt(MAX_CONNECTIONS) % handlers.get(key).size());
+    }
+
+    /**
+     * 移除连接
+     * @param serverAddress
+     * @param handler
+     */
+    public void removeConnect(InetSocketAddress serverAddress, NettyClientHandler handler){
+        for (String key : handlers.keySet()){
+            if(key.split("/")[1].equals(serverAddress.toString().split("/")[1])){
+                Iterator<NettyClientHandler> iterator = handlers.get(key).iterator();
+                while (iterator.hasNext()){
+                    NettyClientHandler next = iterator.next();
+                    if(next.equals(handler)){
+                        iterator.remove();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     public NettyClientHandler createConnection(InetSocketAddress serverAddress){
@@ -75,7 +125,10 @@ public class NettyClient {
                         ch.pipeline().addLast(heartResponseHandler);
                         ch.pipeline().addLast(nettyClientHandler);
                     }
-            }).connect(serverAddress.getAddress().getHostAddress(), serverAddress.getPort()).sync();
+            }).connect(serverAddress.getAddress().getHostAddress(), serverAddress.getPort()).sync()
+                    .addListener((ChannelFutureListener) future -> {
+                        log.info(future.channel().id() + "连接成功");
+                    });
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

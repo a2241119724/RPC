@@ -1,6 +1,8 @@
 package com.lab.rpc.client.discovery;
 
+import com.lab.rpc.client.netty.NettyClient;
 import com.lab.rpc.client.spi.loadbalance.ILoadBalance;
+import com.lab.rpc.common.utils.Utils;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
@@ -21,10 +23,13 @@ public abstract class AbstractServerDiscovery implements IServerDiscovery{
     @Resource
     private ILoadBalance loadBalance;
 
+    protected NettyClient nettyClient;
+
     protected Map<String, List<InetSocketAddress>> serverCache = new ConcurrentHashMap<>();
 
     @Override
     public void connect() {
+        nettyClient = Utils.getBean(NettyClient.class);
         connect0();
         loadAllServices();
         watchServices();
@@ -37,14 +42,18 @@ public abstract class AbstractServerDiscovery implements IServerDiscovery{
 
     @Override
     public InetSocketAddress getInstance(String serverName){
+        return loadBalance.select(getAllInstance(serverName));
+    }
+
+    @Override
+    public List<InetSocketAddress> getAllInstance(String serverName) {
         if(!serverCache.containsKey(serverName)){
             log.info("没有找到服务:" + serverName);
             log.info("重新加载服务");
             loadAllServices();
             return null;
         }
-        List<InetSocketAddress> addresses = serverCache.get(serverName);
-        return loadBalance.select(addresses);
+        return serverCache.get(serverName);
     }
 
     public void info() {

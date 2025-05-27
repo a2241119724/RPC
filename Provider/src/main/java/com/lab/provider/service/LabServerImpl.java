@@ -19,6 +19,7 @@ public class LabServerImpl implements LabServer {
 
     @Override
     public String getInfo(String str) {
+        for (int i = 0; i < 1000000; i++){}
         return "RPC " + str;
     }
 }

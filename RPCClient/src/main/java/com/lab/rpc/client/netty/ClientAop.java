@@ -1,6 +1,6 @@
 package com.lab.rpc.client.netty;
 
-import com.lab.rpc.client.annotation.RPCResource;
+import com.lab.rpc.client.annotation.RPCReference;
 import com.lab.rpc.client.netty.handler.NettyClientHandler;
 import com.lab.rpc.client.discovery.IServerDiscovery;
 import com.lab.rpc.common.enumerate.ProtocolMessageTypeEnum;
@@ -9,7 +9,9 @@ import com.lab.rpc.common.message.RpcRequest;
 import com.lab.rpc.common.message.RpcResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
@@ -20,8 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author lab
@@ -31,21 +32,21 @@ import java.util.Map;
  * @date 2025/4/13 14:50
  */
 @Slf4j
-public class ClientAop implements MethodInterceptor, BeanPostProcessor {
+public class ClientAop implements MethodInterceptor, BeanPostProcessor, CommandLineRunner {
     @Resource
     private NettyClient nettyClient;
     @Resource
     private IServerDiscovery serverDiscovery;
 
     private final Map<String, Object> proxy = new HashMap<>();
+    private final Set<String> servers = new HashSet<>();
 
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
-        InetSocketAddress instance = serverDiscovery.getInstance(method.getDeclaringClass().getSimpleName());
-        if(instance == null){
+        NettyClientHandler nettyClientHandler = nettyClient.getConnection(method.getDeclaringClass().getSimpleName());
+        if(nettyClientHandler==null){
             return null;
         }
-        NettyClientHandler nettyClientHandler = nettyClient.getConnection(instance);
         RpcRequest request = RpcRequest.builder()
                 .functionName(method.getName())
                 .serverName(method.getDeclaringClass().getSimpleName())
@@ -90,7 +91,8 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean,@NonNull String beanName) throws BeansException {
         for (Field field : bean.getClass().getDeclaredFields()) {
-            if(field.getAnnotation(RPCResource.class)!=null){
+            if(field.getAnnotation(RPCReference.class)!=null){
+                servers.add(field.getType().getSimpleName());
                 Object proxy = getProxy(field.getType(), ProxyType.Cglib);
                 try {
                     field.setAccessible(true);
@@ -101,6 +103,14 @@ public class ClientAop implements MethodInterceptor, BeanPostProcessor {
             }
         }
         return bean;
+    }
+
+    @Override
+    public void run(String... args){
+        serverDiscovery.connect();
+        for (String server : servers) {
+            nettyClient.preCreateConnection(server);
+        }
     }
 
     public enum ProxyType{

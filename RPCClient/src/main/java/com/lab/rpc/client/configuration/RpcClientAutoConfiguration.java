@@ -8,8 +8,12 @@ import com.lab.rpc.client.spi.loadbalance.ILoadBalance;
 import com.lab.rpc.client.xxl.MyJobHandler;
 import com.lab.rpc.common.utils.Utils;
 import com.lab.rpc.client.discovery.IServerDiscovery;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +26,7 @@ import org.springframework.context.annotation.Scope;
  * @date 2025/4/14 23:16
  */
 @Configuration
-public class RpcClientAutoConfiguration implements CommandLineRunner {
+public class RpcClientAutoConfiguration{
     @Bean
     public NettyClient nettyClient(){
         return new NettyClient();
@@ -63,10 +67,5 @@ public class RpcClientAutoConfiguration implements CommandLineRunner {
     @Bean
     public ClientHeartBeatHandler clientHeartBeatHandler(){
         return new ClientHeartBeatHandler();
-    }
-
-    @Override
-    public void run(String... args){
-        serverDiscovery().connect();
     }
 }

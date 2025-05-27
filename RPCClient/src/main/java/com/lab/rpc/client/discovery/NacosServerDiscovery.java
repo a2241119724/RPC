@@ -7,7 +7,9 @@ import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.api.naming.pojo.ListView;
+import com.lab.rpc.client.netty.NettyClient;
 
+import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +81,7 @@ public class NacosServerDiscovery extends AbstractServerDiscovery {
                         addresses.add(new InetSocketAddress(instance.getIp(), instance.getPort()));
                     }
                     serverCache.put(server, addresses);
+                    nettyClient.preCreateConnection(server);
                     info();
                 });
             } catch (NacosException e) {

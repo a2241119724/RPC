@@ -31,12 +31,7 @@ public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<Protocol
                 // 线程池被wait,EventLoop被线程池的get() pack
                 // visualVM
                 log.info("发送心跳");
-                ProtocolMessage.Header header = ProtocolMessage.Header.builder()
-                        .type(ProtocolMessageTypeEnum.HEART_RESPONSE.getKey()).build();
-                ProtocolMessage<RpcHeartResponse> protocolMessage = new ProtocolMessage<>();
-                protocolMessage.setHeader(header);
-                protocolMessage.setBody(RpcHeartResponse.builder().build());
-                ctx.writeAndFlush(protocolMessage);
+                heartResponse(ctx);
             }
         } else {
             super.userEventTriggered(ctx, evt);
@@ -63,5 +58,14 @@ public class ClientHeartBeatHandler extends SimpleChannelInboundHandler<Protocol
     @Override
     public boolean acceptInboundMessage(Object msg){
         return ((ProtocolMessage<?>)msg).getBody() instanceof RpcHeartRequest;
+    }
+
+    static void heartResponse(ChannelHandlerContext ctx) {
+        ProtocolMessage.Header header = ProtocolMessage.Header.builder()
+                .type(ProtocolMessageTypeEnum.HEART_RESPONSE.getKey()).build();
+        ProtocolMessage<RpcHeartResponse> protocolMessage = new ProtocolMessage<>();
+        protocolMessage.setHeader(header);
+        protocolMessage.setBody(RpcHeartResponse.builder().build());
+        ctx.writeAndFlush(protocolMessage);
     }
 }

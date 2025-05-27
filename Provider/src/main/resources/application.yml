@@ -30,3 +30,13 @@ management:
     export:
       prometheus:
         enabled: true
+#dubbo:
+#  registry:
+#    address: nacos://192.168.1.120:8858
+#  scan:
+#    base-packages: com.lab.provider.service
+#  application:
+#    name: provider
+#  protocol:
+#    name: dubbo
+#    port: -1
