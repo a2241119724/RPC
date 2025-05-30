@@ -1,4 +1,4 @@
-package com.lab.rpc.common.spi;
+package com.lab.rpc.common.serializer;
 
 
 import com.alibaba.fastjson.JSON;

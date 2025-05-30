@@ -1,4 +1,4 @@
-package com.lab.rpc.common.spi;
+package com.lab.rpc.common.serializer;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;

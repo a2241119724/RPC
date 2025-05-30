@@ -5,7 +5,7 @@ import com.lab.rpc.common.handler.HeartResponseHandler;
 import com.lab.rpc.common.handler.RpcDecoder;
 import com.lab.rpc.common.utils.Utils;
 import com.lab.rpc.common.handler.RpcEncoder;
-import com.lab.rpc.common.spi.ISerializer;
+import com.lab.rpc.common.serializer.ISerializer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

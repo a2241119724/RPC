@@ -1,7 +1,7 @@
 package com.lab.consumer;
 
 import com.lab.rpc.common.message.RpcRequest;
-import com.lab.rpc.common.spi.ISerializer;
+import com.lab.rpc.common.serializer.ISerializer;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

@@ -1,7 +1,7 @@
 package com.lab.rpc.common.handler;
 
 import com.lab.rpc.common.message.ProtocolMessage;
-import com.lab.rpc.common.spi.ISerializer;
+import com.lab.rpc.common.serializer.ISerializer;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
