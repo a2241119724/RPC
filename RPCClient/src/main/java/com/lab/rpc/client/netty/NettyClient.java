@@ -48,7 +48,7 @@ public class NettyClient {
      */
     private volatile Map<String, List<NettyClientHandler>> handlers;
 
-    private static final int MAX_CONNECTIONS = 5;
+    private static final int MAX_CONNECTIONS = 10;
     private final Random random = new Random();
 
     public NettyClient(){
@@ -76,7 +76,7 @@ public class NettyClient {
             return null;
         }
         String key = serverName+":"+instance;
-        if(!handlers.containsKey(key)){
+        if(!handlers.containsKey(key) || handlers.get(key).size() < MAX_CONNECTIONS){
             preCreateConnection(serverName);
         }
         return handlers.get(key).get(random.nextInt(MAX_CONNECTIONS) % handlers.get(key).size());
@@ -89,7 +89,7 @@ public class NettyClient {
      */
     public void removeConnect(InetSocketAddress serverAddress, NettyClientHandler handler){
         for (String key : handlers.keySet()){
-            if(key.split("/")[1].equals(serverAddress.toString().split("/")[1])){
+            if(key.split(":",2)[1].equals(serverAddress.toString())){
                 Iterator<NettyClientHandler> iterator = handlers.get(key).iterator();
                 while (iterator.hasNext()){
                     NettyClientHandler next = iterator.next();

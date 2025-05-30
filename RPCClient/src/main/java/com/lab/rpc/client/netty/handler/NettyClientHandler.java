@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -36,9 +38,9 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
         NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
         TimeUnit.MINUTES, new ArrayBlockingQueue<>(1000), new DefaultThreadFactory("Request"));
 
+    private Map<Long, ResponseFuture> responseFutureMap = new HashMap<>();
     private IFaultTolerance faultTolerance;
     private NettyClient nettyClient;
-    private RpcResponse response;
     private ChannelHandlerContext ctx;
 
     @Override
@@ -55,35 +57,28 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     @Override
     protected synchronized void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RpcResponse> protocolMessage){
         log.info("收到Provider的消息:" + protocolMessage.toString());
-        try {
-            response = protocolMessage.getBody();
-            notify();
-        }catch (Exception e){
-            log.info(e.toString());
-        }
+        ResponseFuture future = responseFutureMap.get(protocolMessage.getHeader().getRequestId());
+        future.setResult(protocolMessage);
+        responseFutureMap.remove(protocolMessage.getHeader().getRequestId());
     }
 
     public RpcResponse send(ProtocolMessage<?> protocolMessage) throws InterruptedException, ExecutionException {
-        executor.submit(()->{
-            if(faultTolerance == null){ return; }
+        ResponseFuture future = new ResponseFuture();
+        responseFutureMap.put(protocolMessage.getHeader().getRequestId(), future);
+        return executor.submit(()->{
+            if(faultTolerance == null){ return null; }
             // 重试
-            faultTolerance.execute(() -> {
-                log.info("Client发送:" + protocolMessage.toString());
-                synchronized (this){
-                    ctx.writeAndFlush(protocolMessage);
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                    if(ProtocolMessageStatusEnum.getEnumByKey(protocolMessage.getHeader().getStatus())
-                            == ProtocolMessageStatusEnum.ERROR){
-                        throw new RuntimeException();
-                    }
+            return faultTolerance.execute(() -> {
+                log.info("Client发送:" + protocolMessage);
+                ctx.writeAndFlush(protocolMessage);
+                ProtocolMessage<RpcResponse> protocolMessage0 = future.get();
+                if(ProtocolMessageStatusEnum.getEnumByKey(protocolMessage0.getHeader().getStatus())
+                        == ProtocolMessageStatusEnum.ERROR){
+                    throw new RuntimeException();
                 }
+                return protocolMessage0.getBody();
             });
         }).get();
-        return response;
     }
 
     @Override
@@ -104,5 +99,23 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     @Override
     public boolean acceptInboundMessage(Object msg){
         return ((ProtocolMessage<?>)msg).getBody() instanceof RpcResponse;
+    }
+
+    class ResponseFuture {
+        private ProtocolMessage<RpcResponse> result;
+
+        public synchronized ProtocolMessage<RpcResponse> get() {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return result;
+        }
+
+        public synchronized void setResult(ProtocolMessage<RpcResponse> result) {
+            this.result = result;
+            notifyAll();
+        }
     }
 }

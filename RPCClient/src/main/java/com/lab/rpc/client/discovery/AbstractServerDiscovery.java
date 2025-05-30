@@ -51,7 +51,6 @@ public abstract class AbstractServerDiscovery implements IServerDiscovery{
             log.info("没有找到服务:" + serverName);
             log.info("重新加载服务");
             loadAllServices();
-            return null;
         }
         return serverCache.get(serverName);
     }

@@ -1,5 +1,7 @@
 package com.lab.rpc.client.spi.faulttolerance;
 
+import java.util.concurrent.Callable;
+
 /**
  * @author lab
  * @title IFaultTolerance
@@ -9,10 +11,12 @@ package com.lab.rpc.client.spi.faulttolerance;
  */
 public interface IFaultTolerance {
     /**
-     * 执行重试
+     * 行重试
      * @param task 需要检测地任务
+     * @return 响应数据
+     * @param <T> 响应的类型
      */
-    void execute(Runnable task);
+    <T> T execute(Callable<T> task);
 
     /**
      * 计算延迟时间

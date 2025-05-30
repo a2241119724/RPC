@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -38,18 +39,18 @@ public abstract class AbstractFaultTolerance implements IFaultTolerance{
     }
 
     @Override
-    public void execute(Runnable task){
+    public <T> T execute(Callable<T> task){
         if (state == CircuitState.OPEN) {
             // 熔断中
             log.info("熔断:" + task.toString());
-            return;
+            return null;
         }
         int curRetries = 0;
         while (curRetries++ < maxRetries){
             try {
-                task.run();
+                T result = (T)task.call();
                 success();
-                break;
+                return result;
             } catch (Throwable t) {
                 float delay = calculateDelay(curRetries);
                 try {
@@ -60,6 +61,7 @@ public abstract class AbstractFaultTolerance implements IFaultTolerance{
             }
             failure();
         }
+        return null;
     }
 
     private void success() {

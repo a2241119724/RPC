@@ -26,6 +26,7 @@ import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -49,12 +50,11 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
     private IServerRegister serverRegister;
 
     private final Map<String, Object> map = new HashMap<>();
-    private long startTime;
+    private final Map<String, FastClass> fastMap = new ConcurrentHashMap<>();
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         monitor.getReportDialRequestCount().increment();
-        startTime = System.currentTimeMillis();
         super.channelActive(ctx);
         InetSocketAddress socketAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         log.info(socketAddress.getHostName() + socketAddress.getPort() + "创建连接...");
@@ -63,6 +63,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RpcRequest> protocolMessage){
         log.info("收到Consumer的消息:" + protocolMessage.toString());
+        final long startTime = System.currentTimeMillis();
         RpcRequest request = protocolMessage.getBody();
         RpcResponse.RpcResponseBuilder responseBuilder = RpcResponse.builder();
         ProtocolMessage.Header.HeaderBuilder header = ProtocolMessage.Header.builder()
@@ -76,7 +77,7 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<ProtocolMess
             return;
         }
         Object serverBean = map.get(request.getServerName());
-        FastClass fastClass = FastClass.create(serverBean.getClass());
+        FastClass fastClass = fastMap.getOrDefault(request.getServerName(), FastClass.create(serverBean.getClass()));
         FastMethod method = fastClass.getMethod(request.getFunctionName(), request.getParameterTypes());
         try {
             Object result = method.invoke(serverBean, request.getParameters());
