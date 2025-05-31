@@ -30,7 +30,7 @@ public final class SpiLoader {
     private static final Map<String, Class<?>> instances = new ConcurrentHashMap<>();
 
     /**
-     * 只展示核心方法，完整内容可以去看源码
+     * TODO
      * @param loadClass 要加载的类型
      * @return
      */
@@ -64,6 +64,13 @@ public final class SpiLoader {
         return cache.get(loadClass.getName());
     }
 
+    /**
+     * TODO
+     * @param tClass
+     * @param key
+     * @return
+     * @param <T>
+     */
     public static <T> T getInstance(Class<?> tClass, String key) {
         Class<?> implClass = instances.get(key);
         String implClassName = implClass.getName();
