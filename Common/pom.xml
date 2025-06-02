@@ -17,7 +17,6 @@
         <dependency>
             <groupId>com.lab</groupId>
             <artifactId>RPCCommon</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

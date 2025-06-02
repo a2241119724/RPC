@@ -29,18 +29,14 @@
         <dependency>
             <groupId>com.lab</groupId>
             <artifactId>RPCCommon</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.83_noneautotype</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.xuxueli/xxl-job-core -->
         <dependency>
             <groupId>com.xuxueli</groupId>
             <artifactId>xxl-job-core</artifactId>
-            <version>2.2.0</version>
         </dependency>
     </dependencies>
 </project>

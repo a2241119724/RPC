@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 
 /**
  * @author lab
- * @title JavaSerializer
+ * @title JdkSerializer
  * @projectName RPC
  * @description Kryo序列化
  * @date 2025/4/28 15:45
@@ -25,6 +25,7 @@ public class KryoSerializer implements ISerializer {
         k.register(RpcResponse.class);
         k.register(RpcHeartRequest.class);
         k.register(RpcHeartResponse.class);
+        k.setRegistrationRequired(false);
         return k;
     });
 
@@ -41,6 +42,8 @@ public class KryoSerializer implements ISerializer {
     public <T> T deserialize(byte[] bytes, Class<T> clazz) {
         ByteArrayInputStream stream = new ByteArrayInputStream(bytes);
         Input input = new Input(stream);
-        return clazz.cast(kryo.get().readClassAndObject(input));
+        Object obj = kryo.get().readClassAndObject(input);
+        input.close();
+        return clazz.cast(obj);
     }
 }

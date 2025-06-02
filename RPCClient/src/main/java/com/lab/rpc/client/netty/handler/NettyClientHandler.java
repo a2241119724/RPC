@@ -14,6 +14,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.NettyRuntime;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -33,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2025/4/19 23:00
  */
 @Slf4j
-public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RpcResponse>> {
+public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMessage<RpcResponse>> implements InitializingBean {
     public static ThreadPoolExecutor executor = new ThreadPoolExecutor(
         NettyRuntime.availableProcessors() * 2,NettyRuntime.availableProcessors() * 4,1,
         TimeUnit.MINUTES, new ArrayBlockingQueue<>(1000), new DefaultThreadFactory("Request"));
@@ -99,6 +100,11 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<ProtocolMess
     @Override
     public boolean acceptInboundMessage(Object msg){
         return ((ProtocolMessage<?>)msg).getBody() instanceof RpcResponse;
+    }
+
+    @Override
+    public void afterPropertiesSet(){
+        executor.prestartAllCoreThreads();
     }
 
     class ResponseFuture {

@@ -4,12 +4,12 @@ import java.io.*;
 
 /**
  * @author lab
- * @title JavaSerializer
+ * @title JdkSerializer
  * @projectName RPC
  * @description Java自带序列化
  * @date 2025/4/28 15:45
  */
-public class JavaSerializer implements ISerializer{
+public class JdkSerializer implements ISerializer{
     @Override
     public <T> byte[] serialize(T obj) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

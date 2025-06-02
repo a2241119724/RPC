@@ -1,1 +1,1 @@
-com.lab.rpc.common.serializer.JsonSerializer
+com.lab.rpc.common.serializer.KryoSerializer

@@ -1,4 +1,5 @@
 com.lab.rpc.common.serializer.JsonSerializer
-com.lab.rpc.common.serializer.JavaSerializer
+com.lab.rpc.common.serializer.JdkSerializer
 com.lab.rpc.common.serializer.KryoSerializer
 com.lab.rpc.common.serializer.ProtoSerializer
+com.lab.rpc.common.serializer.HessianSerializer

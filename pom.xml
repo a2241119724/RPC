@@ -21,6 +21,16 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <spring-boot.version>2.6.13</spring-boot.version>
+        <fastjson2.version>2.0.56</fastjson2.version>
+        <rpc.version>0.0.1-SNAPSHOT</rpc.version>
+        <user.version>0.0.1-SNAPSHOT</user.version>
+        <hutool.version>5.8.11</hutool.version>
+        <nacos-discovery.version>2021.0.6.2</nacos-discovery.version>
+        <curator.version>5.8.0</curator.version>
+        <protobuf.version>4.30.2</protobuf.version>
+        <kryo.version>5.6.2</kryo.version>
+        <hessian.version>4.0.66</hessian.version>
+        <xxl-job.version>2.2.0</xxl-job.version>
     </properties>
 
     <dependencyManagement>
@@ -46,6 +56,66 @@
             <dependency>
                 <groupId>com.rabbitmq</groupId>
                 <artifactId>amqp-client</artifactId>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lab</groupId>
+                <artifactId>RPCCommon</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${nacos-discovery.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.curator</groupId>
+                <artifactId>curator-framework</artifactId>
+                <version>${curator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.esotericsoftware</groupId>
+                <artifactId>kryo</artifactId>
+                <version>${kryo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.caucho</groupId>
+                <artifactId>hessian</artifactId>
+                <version>${hessian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xuxueli</groupId>
+                <artifactId>xxl-job-core</artifactId>
+                <version>${xxl-job.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lab</groupId>
+                <artifactId>Common</artifactId>
+                <version>${user.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lab</groupId>
+                <artifactId>RPCServer</artifactId>
+                <version>${rpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lab</groupId>
+                <artifactId>RPCClient</artifactId>
+                <version>${rpc.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

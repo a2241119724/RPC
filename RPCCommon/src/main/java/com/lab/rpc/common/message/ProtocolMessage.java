@@ -17,8 +17,8 @@ import lombok.NoArgsConstructor;
  * @date 2025/4/19 22:43
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ProtocolMessage<T>{
     private Header header;
     private T body;
