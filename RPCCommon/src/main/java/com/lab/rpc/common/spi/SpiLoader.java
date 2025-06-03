@@ -1,6 +1,7 @@
 package com.lab.rpc.common.spi;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import com.lab.rpc.common.annotation.SPI;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,16 +28,19 @@ public final class SpiLoader {
         add("META-INF/rpc/");
     }};
 
-    private static final Map<String, Class<?>> cache = new ConcurrentHashMap<>();
-    private static final Map<String, Class<?>> instances = new ConcurrentHashMap<>();
+    private static final Map<String, Cache> caches = new ConcurrentHashMap<>();
 
     /**
      * TODO
      * @param loadClass 要加载的类型
      * @return
      */
-    public static Class<?> load(Class<?> loadClass) {
-        log.info("加载类型为{}的SPI",loadClass.getName());
+    public static synchronized <T> T load(Class<T> loadClass) {
+        if (caches.containsKey(loadClass.getName())){
+            return (T) caches.get(loadClass.getName()).getInstance("");
+        }
+        caches.put(loadClass.getName(), new Cache());
+        Map<String, String> cache = caches.get(loadClass.getName()).cache;
         for(String dir : SPI_LOCATION) {
             List<URL> resources = ResourceUtil.getResources(dir + loadClass.getName());
             for(URL resource : resources) {
@@ -49,39 +54,52 @@ public final class SpiLoader {
                             log.error("SPI配置文件格式错误");
                             continue;
                         }
-                        String key = splits[0];
-                        String className = splits[1];
-                        // TODO
-                        cache.put(loadClass.getName(), Class.forName(className));
+                        cache.put(splits[0], splits[1]);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("加载SPI配置文件失败",e);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException("需要加载的类不存在",e);
                 }
             }
         }
-        return cache.get(loadClass.getName());
-    }
-
-    /**
-     * TODO
-     * @param tClass
-     * @param key
-     * @return
-     * @param <T>
-     */
-    public static <T> T getInstance(Class<?> tClass, String key) {
-        Class<?> implClass = instances.get(key);
-        String implClassName = implClass.getName();
-        if (!cache.containsKey(implClassName)) {
-            try {
-                instances.put(implClassName, (Class<?>) implClass.getDeclaredConstructor().newInstance());
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                     InvocationTargetException e) {
-                throw new RuntimeException(String.format("实例化 %s 失败", implClassName), e);
+        if(loadClass.isAnnotationPresent(SPI.class)){
+            String value = loadClass.getAnnotation(SPI.class).value();
+            if(cache.containsKey(value)){
+                return (T)caches.get(loadClass.getName()).getInstance(value);
             }
         }
-        return (T) cache.get(implClassName);
+        return (T) caches.get(loadClass.getName()).getInstance("");
+    }
+
+    public static class Cache {
+        /** 缓存
+         * value: 全类名称
+         */
+        private final LinkedHashMap<String, String> cache = new LinkedHashMap<>();
+        /**
+         * 缓存实例, 多例无用
+         */
+        private Object instance = null;
+
+        public Object getInstance(String name) {
+            /**
+             * if(instance != null){
+             *    return instance;
+             * }
+             */
+            if(cache.containsKey(name)){
+                ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+                try {
+                    log.info("加载SPI实例:" + cache.get(name));
+                    Class<?> class0 = classLoader.loadClass(cache.get(name));
+                    instance = class0.newInstance();
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException("加载SPI实例失败",e);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                return instance;
+            }
+            return getInstance(cache.keySet().iterator().next());
+        }
     }
 }

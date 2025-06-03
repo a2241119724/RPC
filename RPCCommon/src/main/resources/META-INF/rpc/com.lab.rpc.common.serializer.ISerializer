@@ -1,0 +1,5 @@
+json=com.lab.rpc.common.serializer.JsonSerializer
+jdk=com.lab.rpc.common.serializer.JdkSerializer
+kryo=com.lab.rpc.common.serializer.KryoSerializer
+proto=com.lab.rpc.common.serializer.ProtoSerializer
+hessian=com.lab.rpc.common.serializer.HessianSerializer

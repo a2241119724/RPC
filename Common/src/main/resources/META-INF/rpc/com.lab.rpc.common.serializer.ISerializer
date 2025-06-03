@@ -1,0 +1,1 @@
+kryo=com.lab.rpc.common.serializer.KryoSerializer

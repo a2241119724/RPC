@@ -1,0 +1,2 @@
+zookeeper=com.lab.rpc.server.register.ZooKeeperServerRegister
+nacos=com.lab.rpc.server.register.NacosServerRegister

@@ -1,5 +1,6 @@
 package com.lab.rpc.common.utils;
 
+import com.lab.rpc.common.spi.SpiLoader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
@@ -30,9 +31,12 @@ public class Utils implements ApplicationContextAware {
     }
 
     public static <T> T getInstanceBySpi(Class<T> clazz){
-        for (T t : ServiceLoader.load(clazz)) {
-            return t;
-        }
-        return null;
+        /**
+         * for (T t : ServiceLoader.load(clazz)) {
+         *     return t;
+         * }
+         * return null;
+         */
+        return SpiLoader.load(clazz);
     }
 }
